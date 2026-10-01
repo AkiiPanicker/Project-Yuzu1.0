@@ -1,4 +1,4 @@
-# NumPy GPT from scratch
+# GPT from scratch
 
 An educational decoder-only language model implemented with the Python standard
 library and NumPy. The first milestone is correctness and understanding; later
