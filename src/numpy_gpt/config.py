@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,7 @@ class ModelConfig:
     d_ff: int = 704
     rope_base: float = 10_000.0
     norm_epsilon: float = 1e-5
+    initializer_std: float = 0.02
     tie_embeddings: bool = True
     use_bias: bool = False
     seed: int = 1337
@@ -44,6 +46,14 @@ class ModelConfig:
             raise ValueError("rope_base must be positive")
         if self.norm_epsilon <= 0:
             raise ValueError("norm_epsilon must be positive")
+        if not math.isfinite(self.initializer_std) or self.initializer_std <= 0:
+            raise ValueError("initializer_std must be finite and positive")
+        if (
+            not isinstance(self.seed, int)
+            or isinstance(self.seed, bool)
+            or self.seed < 0
+        ):
+            raise ValueError("seed must be a nonnegative integer")
 
     @property
     def head_dim(self) -> int:
@@ -84,4 +94,3 @@ class ModelConfig:
         if not isinstance(values, dict):
             raise ValueError("configuration root must be a JSON object")
         return cls(**values)
-

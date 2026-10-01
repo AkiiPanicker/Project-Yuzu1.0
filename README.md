@@ -48,8 +48,11 @@ tests/                 Standard-library unittest suite
 
 ## Current status
 
-Phase 1 is active: numerical primitives are being implemented and gradient-checked.
-No training data has been ingested and no model training has started.
+Phase 1 is active. Numerical primitives and one complete pre-normalized residual
+transformer block are verified by 58 deterministic and finite-difference tests.
+The four-block language model with tied input/output embeddings is implemented
+and awaiting the 64-test checkpoint. No training data has been ingested and no
+model training has started.
 
 ## Commands
 

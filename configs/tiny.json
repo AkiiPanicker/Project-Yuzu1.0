@@ -7,8 +7,8 @@
   "d_ff": 704,
   "rope_base": 10000.0,
   "norm_epsilon": 1e-05,
+  "initializer_std": 0.02,
   "tie_embeddings": true,
   "use_bias": false,
   "seed": 1337
 }
-

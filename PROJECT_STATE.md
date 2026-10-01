@@ -1,7 +1,7 @@
 # Project state
 
 Last updated: 2026-10-02 (Asia/Calcutta)
-State version: 13
+State version: 17
 
 ## Recovery instruction
 
@@ -14,7 +14,8 @@ action. This file is the continuity source if chat context is unavailable.
 
 - Root: `C:\Users\AKSHAT\Desktop\numpy-gpt-from-scratch`
 - Git branch: `main`
-- Git state: initialized; initial files are uncommitted
+- Git state: verified 52-test core milestone committed at `b8ded9e`; current
+  transformer-block and documentation changes are uncommitted
 - Runtime constraint: model code uses the Python standard library and NumPy
 - Installed NumPy observed during setup: 2.3.5
 - Long-term direction: build the strongest feasible GPT-style system from first
@@ -52,6 +53,36 @@ action. This file is the continuity source if chat context is unavailable.
 - Grouped-query attention is deferred until inference optimization.
 - Mixture-of-experts and multi-head latent attention are research branches, not
   baseline requirements.
+
+## Recommended execution-backend direction (not yet implemented)
+
+- Do not replace NumPy with scalar Python or `math` loops; that would remain on
+  the CPU and discard efficient array kernels without enabling CUDA.
+- Keep the verified NumPy implementation as the readable executable
+  specification, numerical test oracle, and CPU fallback.
+- Complete the tiny NumPy model and prove that it can overfit one small batch
+  before starting a native GPU port.
+- For low-level GPU control without PyTorch, JAX, CuPy, or Numba, add a separate
+  CUDA C++ backend compiled with NVIDIA's CUDA toolchain and loaded from Python
+  through a narrow standard-library `ctypes` interface.
+- Initially use custom CUDA kernels for elementwise operations, reductions,
+  normalization, RoPE, masking, and optimizer updates, while using cuBLAS for
+  matrix multiplication. A from-scratch GEMM may be an educational experiment,
+  but it should not be the training-performance baseline.
+- Require every CUDA forward and backward operation to match the NumPy oracle
+  within dtype-appropriate tolerances before it is accepted.
+- Defer multi-machine synchronous training until one-GPU training is correct and
+  profiled; separate gaming laptops are more useful initially for independent
+  experiments and evaluation jobs.
+
+Observed local GPU environment on 2026-10-02:
+
+- NVIDIA GeForce RTX 3050 with 4,096 MiB VRAM and a reported 60 W power cap.
+- Windows WDDM driver/KMD 616.92 and CUDA UMD compatibility 13.4.
+- `nvcc` was not recognized and `where.exe cl` found no compiler in the current
+  shell. This does not prove the toolchains are absent from disk, but neither is
+  currently usable from that shell.
+- Other gaming laptops and cloud GPU targets remain uninventoried.
 
 ## Future identity decisions
 
@@ -150,6 +181,33 @@ action. This file is the continuity source if chat context is unavailable.
 46. Received the user's confirmation that the expanded 52-test suite passed,
     verifying the complete three-projection SwiGLU feed-forward composition and
     its input and weight gradients.
+47. Received the local GPU inventory showing an RTX 3050 with 4 GiB VRAM and a
+    working display driver, but no discoverable `nvcc` or `cl` command.
+48. Confirmed that the verified 52-test milestone was committed at `b8ded9e`.
+49. Implemented one complete pre-normalized residual transformer block with two
+    RMSNorms, causal multi-head attention, SwiGLU feed-forward, and two residual
+    connections.
+50. Added explicit backward composition through both residual paths and grouped
+    gradients for both norm scales and all seven projection matrices.
+51. Added six transformer-block tests covering primitive equivalence, arbitrary
+    leading dimensions, future isolation, ten numerical gradient groups,
+    residual identity, and delegated configuration validation.
+52. Updated the architecture record and learning path with backend inventory,
+    block equations, source ranges, test ranges, and residual-gradient flow.
+53. Received the user's confirmation that the expanded 58-test suite passed,
+    verifying the complete pre-normalized residual transformer block, both
+    residual-gradient paths, causality, and all ten tested gradient groups.
+54. Added immutable parameter, gradient, and backward-cache records for the full
+    stacked language model.
+55. Implemented byte embedding lookup, four-block forward composition, final
+    RMSNorm, tied output projection, and configuration/shape validation.
+56. Implemented full backward composition through the blocks in reverse order,
+    including addition of the input-lookup and tied-output embedding gradients.
+57. Added six language-model tests covering explicit composition, four-block
+    cache/logit shapes, exact parameter count, causality, tied-gradient addition,
+    all parameter gradients, context offsets, and invalid model contracts.
+58. Updated package exports, README, architecture status, and the learning path
+    with full-model flow, equations, source ranges, and test ranges.
 
 ## Corpus state
 
@@ -176,7 +234,7 @@ Audit results:
 ## Verification status
 
 - User-reported `python -m unittest discover -s tests -v` on 2026-10-02:
-  the expanded 52-test suite passed with final status `OK`.
+  the expanded 58-test suite passed with final status `OK`.
 - Cross-entropy backward pass matched centered finite differences with maximum
   absolute error below `1e-9`.
 - `python -m py_compile scripts\inventory_corpus.py src\numpy_gpt\config.py`:
@@ -197,6 +255,11 @@ Audit results:
   projection-weight gradients are verified.
 - Complete three-projection SwiGLU feed-forward composition, input gradients, and
   all three projection-weight gradients are verified.
+- The complete pre-normalized residual transformer block, both residual-gradient
+  paths, future isolation, norm-scale gradients, and all seven projection-weight
+  gradients are verified.
+- `src\numpy_gpt\model.py` and `tests\test_model.py` are newly written and
+  unverified. The full suite is expected to contain 64 tests.
 
 ## Important limitations and risks
 
@@ -205,9 +268,13 @@ Audit results:
 - Seven PDFs have no adequate text layer and require OCR assessment.
 - NumPy does not provide CUDA execution; the verified design must eventually be
   ported to a GPU-capable backend for larger runs.
-- All primitives, full multi-head attention, and the complete feed-forward module
-  are verified; no residual transformer block, optimizer, tokenizer, trainer, or
-  inference loop has been implemented.
+- The local RTX 3050 and driver are inventoried, but the CUDA compiler and native
+  host compiler are not available from the current shell; the other laptops,
+  cloud GPUs, and network links remain unknown.
+- All components through one residual transformer block are verified. The full
+  four-block model is implemented but awaits user verification; no parameter
+  initializer, optimizer, tokenizer, trainer, or inference loop has been
+  implemented.
 - Similarity to frontier assistants is a direction, not a measurable milestone;
   every stage needs explicit baselines and evaluations.
 - A real-person-inspired personality can create privacy, impersonation, emotional
@@ -215,8 +282,7 @@ Audit results:
 
 ## Remaining major milestones
 
-1. Assemble and verify a residual pre-norm transformer block and the full
-   language model.
+1. Verify the full four-block language model.
 2. Implement parameter initialization, AdamW, gradient clipping, checkpointing,
    byte batching, evaluation, sampling, and terminal-visible training.
 3. Approve and normalize training data, then overfit a tiny corpus before any
@@ -242,15 +308,22 @@ and corpus audit exist. Phase 1 is active. Stable probability functions,
 cross-entropy backward, and gradient-checking infrastructure are verified.
 All primitives, full multi-head attention, and the complete three-projection
 SwiGLU feed-forward module are verified.
+One pre-normalized residual transformer block and its explicit backward pass are
+verified by the expanded 58-test suite.
+The complete four-block byte language model with a final RMSNorm and tied
+input/output embeddings is implemented but awaits user verification.
 The user also wants to learn the implementation while building it; new stages
 should extend the learning-path document after source line numbers stabilize.
 
 ## Exact next action
 
-The user is committing the verified 52-test milestone before implementation
-continues. After the user confirms the commit is complete, implement and
-gradient-check one pre-norm residual transformer block. Do not start that module
-before the user asks to proceed.
+The user should run the expanded test suite from the project root:
+
+`python -m unittest discover -s tests -v`
+
+Expected success signal: 64 tests run and the final line is `OK`. Do not implement
+parameter initialization or an optimizer until the user reports this result.
+Keep NumPy as the canonical implementation and keep `nvcc`/`cl` setup deferred.
 
 Do not start corpus extraction or model training until these primitives and their
 backward passes pass deterministic numerical checks.
@@ -422,3 +495,69 @@ backward passes pass deterministic numerical checks.
 - Exact next action: pause while the user commits this milestone; after the user
   asks to proceed, implement and gradient-check one pre-norm residual transformer
   block.
+
+### 2026-10-02 - State version 14
+
+- Evaluated the user's proposal to replace NumPy with "pure math" to gain CUDA
+  control; recorded that scalar Python math does not provide GPU execution.
+- Recommended a dual-backend design: retain NumPy as the verified executable
+  specification and later add native CUDA C++ kernels behind a narrow `ctypes`
+  boundary.
+- Recommended custom kernels for transformer-specific elementwise and reduction
+  work, with cuBLAS as the initial matrix-multiplication baseline.
+- Deferred CUDA implementation until the full tiny NumPy model overfits one batch
+  and the available GPUs, VRAM, drivers, toolkits, compilers, and network links
+  are inventoried.
+- Made no model-code changes and did not run project tests or training.
+- Exact next action: the user finishes the current commit and provides complete
+  `nvidia-smi` output before any GPU backend is designed or implemented.
+
+### 2026-10-02 - State version 15
+
+- Recorded the screenshot evidence: local NVIDIA GeForce RTX 3050, 4,096 MiB
+  VRAM, WDDM driver/KMD 616.92, CUDA UMD compatibility 13.4, and no `nvcc` or
+  `cl` command discoverable from the current shell.
+- Confirmed the prior verified milestone is committed at `b8ded9e`.
+- Implemented one pre-normalized residual transformer block and its explicit
+  backward pass through both residual branches.
+- Added six deterministic and finite-difference tests, bringing the expected
+  suite total to 58 and covering ten independent gradient groups.
+- Exported the block API and synchronized the architecture record, learning
+  guide, implementation status, and exact source ranges.
+- Did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 58
+  tests finish with final status `OK`; stacked-model assembly remains blocked
+  until then.
+
+### 2026-10-02 - State version 16
+
+- Recorded the user's confirmation that all 58 tests passed.
+- Marked the complete pre-normalized residual block, both identity-gradient
+  routes, causality, two norm-scale gradients, and seven projection-weight
+  gradients as verified.
+- Synchronized `README.md`, the architecture status, learning checkpoint, current
+  stopping point, verification record, remaining milestones, and project phase.
+- Recorded the user's decision to postpone `nvcc` and `cl` setup; NumPy remains
+  the canonical implementation until the full model and tiny-overfit gates pass.
+- Made no model-code changes and did not execute project tests or training.
+- Exact next action: the user may commit this verified milestone; after the user
+  asks to proceed, assemble and gradient-check the four-block language model.
+
+### 2026-10-02 - State version 17
+
+- Implemented the complete four-block byte language-model forward and backward
+  composition using the verified embedding, transformer block, and RMSNorm
+  operations.
+- Added nested immutable parameter, gradient, and cache structures plus strict
+  block-count, shape, context-length, and tied/bias-free contract validation.
+- Implemented tied input/output embeddings and explicitly added both gradient
+  contributions into the shared embedding table.
+- Added six tests, bringing the expected suite total to 64; the full-model
+  numerical test covers the shared embedding, final norm, and every parameter in
+  all four transformer blocks.
+- Updated package exports, README, architecture status, learning order, equations,
+  source ranges, and current stopping point.
+- Kept `nvcc` and `cl` setup deferred and did not execute tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 64
+  tests finish with final status `OK`; initialization and optimization remain
+  blocked until then.

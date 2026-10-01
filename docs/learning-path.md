@@ -1,6 +1,6 @@
 # Learning path: rebuild the project in your head
 
-This guide is pinned to the source layout as of project state version 13. Source
+This guide is pinned to the source layout as of project state version 17. Source
 line numbers will move as the implementation grows, so update this file whenever
 the referenced code changes substantially.
 
@@ -424,13 +424,95 @@ This module acts independently at each sequence position. Attention mixes
 information between positions; the feed-forward module transforms the resulting
 representation within each position.
 
-### Step 13 - Understand the public package surface
+### Step 13 - Assemble one pre-norm residual transformer block
 
-Read `src/numpy_gpt/__init__.py:3-90` last. It contains little mathematics; it
+Read:
+
+- `src/numpy_gpt/transformer_block.py:33-50` - grouped parameter gradients and
+  the four nested backward caches.
+- `src/numpy_gpt/transformer_block.py:53-107` - both normalized sublayers and
+  both forward residual additions.
+- `src/numpy_gpt/transformer_block.py:110-146` - reverse composition and both
+  residual-gradient additions.
+- `tests/test_transformer_block.py:26-321` - primitive equivalence, arbitrary
+  leading dimensions, causality, ten numerical gradient checks, residual
+  identity, and invalid configurations.
+
+Forward flow:
+
+```text
+A = RMSNorm(X, attention_norm_scale)
+Z = X + MultiHeadAttention(A)
+F = RMSNorm(Z, feed_forward_norm_scale)
+Y = Z + FeedForward(F)
+```
+
+Pre-normalization means each sublayer receives normalized values while the
+residual stream itself remains unnormalized. Each addition provides a direct
+identity route through the block.
+
+Backward must include those identity routes:
+
+```text
+dZ = dY + RMSNormBackward(FeedForwardBackward(dY))
+dX = dZ + RMSNormBackward(AttentionBackward(dZ))
+```
+
+The first term in each sum is the direct residual gradient. Omitting either term
+would still produce correctly shaped arrays, but training signals would be wrong.
+
+### Step 14 - Assemble the complete four-block language model
+
+Read:
+
+- `src/numpy_gpt/model.py:33-73` - block parameters, complete model parameters,
+  matching gradient records, and the full backward cache.
+- `src/numpy_gpt/model.py:76-147` - configuration and parameter-shape contracts.
+- `src/numpy_gpt/model.py:150-212` - embedding lookup, four-block forward stack,
+  final RMSNorm, and tied output projection.
+- `src/numpy_gpt/model.py:215-250` - reverse block traversal and tied-gradient
+  addition.
+- `tests/test_model.py:93-331` - primitive equivalence, four-block shapes and
+  parameter count, causality, tied gradients, every model-parameter gradient,
+  and invalid contracts.
+
+Forward flow for the configured model:
+
+```text
+byte IDs
+    -> token embedding table E
+    -> transformer block 0
+    -> transformer block 1
+    -> transformer block 2
+    -> transformer block 3
+    -> final RMSNorm
+    -> matrix multiply by E^T
+    -> logits over 256 byte values
+```
+
+For token IDs shaped `(batch, sequence)`, the embedding and block stream is
+`(batch, sequence, d_model)`. The final tied projection changes only the final
+dimension, producing `(batch, sequence, vocab_size)` logits.
+
+The embedding table is used twice: first to look up input vectors and later,
+transposed, to project hidden vectors into vocabulary logits. Backward must add
+both contributions into the one shared parameter:
+
+```text
+dE = dE_from_input_lookups + transpose(dW_from_output_projection)
+```
+
+The blocks run in order during forward and in reverse order during backward. The
+finite-difference test checks the shared embedding, final norm, and all nine
+arrays inside each of the four blocks.
+
+### Step 15 - Understand the public package surface
+
+Read `src/numpy_gpt/__init__.py:3-114` last. It contains little mathematics; it
 selects which names users can import directly from `numpy_gpt`. Reading it earlier
 would show names without explaining their behavior.
 
-### Step 14 - Run the current learning checkpoint
+### Step 16 - Run the current learning checkpoint
 
 From the project root, run:
 
@@ -438,15 +520,16 @@ From the project root, run:
 python -m unittest discover -s tests -v
 ```
 
-This 52-test checkpoint has passed with final status `OK`. When rerunning it, use
-the same success signal. If a test fails, read the test first, state what behavior
-it expected, and only then inspect the associated implementation.
+The previous 58-test checkpoint passed with final status `OK`. The new expected
+checkpoint is 64 tests followed by `OK`. If a test fails, read the test first,
+state what behavior it expected, and only then inspect the associated
+implementation.
 
 ## Track B: corpus and project operations
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 15 - Understand why files are not automatically training data
+### Step 17 - Understand why files are not automatically training data
 
 Read:
 
@@ -459,7 +542,7 @@ Read:
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
 - `docs/corpus-audit.md:49-58` - future preprocessing sequence.
 
-### Step 16 - Read the corpus auditor as an independent utility
+### Step 18 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -474,7 +557,7 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 17 - Read future identity work separately
+### Step 19 - Read future identity work separately
 
 Read:
 
@@ -512,11 +595,14 @@ configuration
     -> causal scaled-dot-product attention
     -> full multi-head attention composition
     -> complete SwiGLU feed-forward composition
+    -> one pre-norm residual transformer block
+    -> four-block byte language model with tied embeddings (awaiting verification)
 ```
 
 The next implementation chain will be:
 
 ```text
-one pre-norm residual transformer block
-    -> stacked language model
+deterministic parameter initialization
+    -> AdamW and gradient clipping
+    -> tiny-batch overfit
 ```

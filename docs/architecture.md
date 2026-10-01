@@ -54,6 +54,20 @@ The byte vocabulary avoids coupling the first model to a tokenizer-training
 pipeline. A subword tokenizer becomes worthwhile for the GPU-scale model because
 bytes consume context inefficiently.
 
+## Execution backend strategy
+
+NumPy remains the readable CPU specification and numerical oracle through the
+first complete tiny-model overfit. A later native CUDA C++ backend will reproduce
+the same operations behind a narrow Python interface. Transformer-specific
+elementwise and reduction operations can use custom kernels, while cuBLAS is the
+initial performance baseline for matrix multiplication.
+
+The local machine reported an NVIDIA GeForce RTX 3050 with 4,096 MiB VRAM, WDDM
+driver/KMD 616.92, and CUDA UMD compatibility 13.4. Neither `nvcc` nor Microsoft's
+`cl` compiler was discoverable from the current shell, so the driver can run CUDA
+applications but the native CUDA development toolchain is not yet available for
+this project. The other laptops and cloud targets remain uninventoried.
+
 ## Scaling gates
 
 The model is not enlarged until all conditions at the current scale pass:
@@ -96,7 +110,17 @@ Verified with deterministic and finite-difference tests:
 - Complete bias-free three-projection SwiGLU feed-forward composition.
 - Separate gate/value input projections, SwiGLU activation, output projection,
   and summed gate/value input-gradient branches.
+- One complete pre-normalized residual transformer block.
+- Explicit backward composition through both residual branches, both RMSNorms,
+  multi-head attention, and the SwiGLU feed-forward network.
+
+Implemented and awaiting user verification:
+
+- Complete four-block byte language-model composition.
+- Token embedding, four residual blocks, final RMSNorm, tied output projection,
+  and reverse-order backward through the entire stack.
+- Addition of the embedding-table gradients from input lookup and tied output use.
 
 Not yet implemented:
 
-- Residual transformer blocks, optimizer, training loop, and generation.
+- Parameter initialization, optimizer, training loop, and generation.
