@@ -1,6 +1,6 @@
 # Learning path: rebuild the project in your head
 
-This guide is pinned to the source layout as of project state version 4. Source
+This guide is pinned to the source layout as of project state version 13. Source
 line numbers will move as the implementation grows, so update this file whenever
 the referenced code changes substantially.
 
@@ -163,13 +163,274 @@ Token IDs are discrete, so there is no gradient with respect to an ID. Gradients
 flow only to the selected rows of `E`. Repeated tokens require addition rather
 than assignment, which is why the backward pass uses `numpy.add.at`.
 
-### Step 7 - Understand the public package surface
+### Step 7 - Compare RMSNorm and LayerNorm
 
-Read `src/numpy_gpt/__init__.py:3-29` last. It contains little mathematics; it
+Read RMSNorm first:
+
+- `src/numpy_gpt/normalization.py:15-41` - numeric, shape, and epsilon checks.
+- `src/numpy_gpt/normalization.py:44-49` - shared scale-gradient reduction.
+- `src/numpy_gpt/normalization.py:52-58` - RMSNorm backward cache.
+- `src/numpy_gpt/normalization.py:61-79` - RMSNorm forward pass.
+- `src/numpy_gpt/normalization.py:82-104` - RMSNorm backward pass.
+- `tests/test_normalization.py:24-58` - definition and gradient tests.
+
+For a vector `x` of width `d`:
+
+```text
+r = 1 / sqrt(mean(x^2) + epsilon)
+n = x * r
+y = n * gamma
+
+g = dY * gamma
+dX = r * [g - n * mean(g * n)]
+dGamma = sum(dY * n over batch and sequence)
+```
+
+Then read LayerNorm:
+
+- `src/numpy_gpt/normalization.py:107-114` - LayerNorm backward cache.
+- `src/numpy_gpt/normalization.py:117-145` - LayerNorm forward pass.
+- `src/numpy_gpt/normalization.py:148-179` - LayerNorm backward pass.
+- `tests/test_normalization.py:61-130` - definition, gradients, constant inputs,
+  and invalid settings.
+
+```text
+mu = mean(x)
+centered = x - mu
+s = 1 / sqrt(mean(centered^2) + epsilon)
+n = centered * s
+y = n * gamma + beta
+
+g = dY * gamma
+dX = s * [g - mean(g) - n * mean(g * n)]
+dGamma = sum(dY * n over batch and sequence)
+dBeta = sum(dY over batch and sequence)
+```
+
+RMSNorm avoids mean subtraction and the learned bias. That makes it slightly
+simpler and matches the selected baseline. LayerNorm remains available for direct
+comparison and for understanding the original Transformer normalization.
+
+### Step 8 - Build the SwiGLU activation from SiLU and a gate
+
+Read SiLU first:
+
+- `src/numpy_gpt/activations.py:15-23` - floating-point validation.
+- `src/numpy_gpt/activations.py:26-35` - overflow-safe sigmoid.
+- `src/numpy_gpt/activations.py:38-43` - SiLU backward cache.
+- `src/numpy_gpt/activations.py:46-52` - SiLU forward pass.
+- `src/numpy_gpt/activations.py:55-69` - SiLU backward pass.
+- `tests/test_activations.py:25-52` - definition, extreme inputs, and gradients.
+
+```text
+sigmoid(x) = 1 / (1 + exp(-x))
+SiLU(x) = x * sigmoid(x)
+
+dSiLU/dx = sigmoid(x) * [1 + x * (1 - sigmoid(x))]
+```
+
+The sigmoid implementation uses separate formulas for nonnegative and negative
+inputs so `exp` never receives a dangerous large positive argument.
+
+Then read the SwiGLU core:
+
+- `src/numpy_gpt/activations.py:72-78` - values cached for backward.
+- `src/numpy_gpt/activations.py:81-101` - gated forward pass.
+- `src/numpy_gpt/activations.py:104-119` - gate and value gradients.
+- `tests/test_activations.py:55-92` - definition, both gradients, and shape errors.
+
+```text
+a = SiLU(gate)
+output = a * value
+
+dGate = dOutput * value * dSiLU/dGate
+dValue = dOutput * a
+```
+
+In the final feed-forward network, two Linear projections create `gate` and
+`value`, SwiGLU combines them, and a third Linear projection returns from hidden
+width 704 to model width 256. Keeping those pieces separate lets each derivative
+be tested before composition.
+
+### Step 9 - Understand RoPE as position-dependent rotation
+
+Read:
+
+- `src/numpy_gpt/position.py:15-23` - floating-point validation.
+- `src/numpy_gpt/position.py:26-42` - frequencies, positions, cosine, and sine.
+- `src/numpy_gpt/position.py:45-51` - cached rotation values.
+- `src/numpy_gpt/position.py:54-93` - adjacent-pair forward rotations.
+- `src/numpy_gpt/position.py:96-117` - inverse-rotation backward pass.
+- `tests/test_position.py:18-82` - identity, explicit rotation, norm preservation,
+  gradients, position offsets, and invalid settings.
+
+For adjacent features `(x_even, x_odd)` at a given position and frequency:
+
+```text
+y_even = x_even * cos(theta) - x_odd * sin(theta)
+y_odd  = x_even * sin(theta) + x_odd * cos(theta)
+
+dX_even = dY_even * cos(theta) + dY_odd * sin(theta)
+dX_odd  = -dY_even * sin(theta) + dY_odd * cos(theta)
+```
+
+This is an ordinary two-dimensional rotation, so it preserves each pair's squared
+length. Position changes the angle, not the vector magnitude. Queries and keys
+will receive the same positional rotations before attention compares them.
+
+The implementation expects either:
+
+```text
+(batch, sequence, head_dimension)
+```
+
+or:
+
+```text
+(batch, heads, sequence, head_dimension)
+```
+
+The offset test proves that rotating positions `3..N` separately produces the
+same values as slicing positions `3..N` from a full rotation. That property will
+matter when generation uses a key/value cache.
+
+### Step 10 - Build causal scaled-dot-product attention
+
+Read:
+
+- `src/numpy_gpt/attention.py:15-23` - finite floating-point validation.
+- `src/numpy_gpt/attention.py:26-35` - values cached for backward.
+- `src/numpy_gpt/attention.py:38-82` - scores, causal mask, softmax, and output.
+- `src/numpy_gpt/attention.py:85-115` - gradients for value, probabilities,
+  scores, query, and key.
+- `tests/test_attention.py:22-114` - mask structure, prefix means, future-token
+  isolation, all three gradients, one-token behavior, and invalid settings.
+
+Forward equations for one head are:
+
+```text
+S = (Q K^T) / sqrt(head_dimension)
+S[i, j] = -infinity when j > i
+P = softmax(S, axis=keys)
+O = P V
+```
+
+The triangular mask lets position `i` attend to positions `0..i`, including
+itself, but never `i+1..N`. Masking happens before softmax, so prohibited entries
+receive exactly zero probability.
+
+Backward equations are applied in reverse order:
+
+```text
+dV = P^T dO
+dP = dO V^T
+dS = P * [dP - sum(dP * P, axis=keys)]
+dQ = (dS K) / sqrt(head_dimension)
+dK = (dS^T Q) / sqrt(head_dimension)
+```
+
+The softmax derivative subtracts the probability-weighted projection from each
+row. Future positions remain zero through backward because their probabilities
+and masked score gradients are zero.
+
+At this stage Q, K, and V are already projected and split into heads. The next
+module will create those projections, apply RoPE to Q and K, call this primitive,
+merge the heads, and apply the output projection.
+
+### Step 11 - Compose full multi-head attention
+
+Read the composition data structures and shape helpers:
+
+- `src/numpy_gpt/multi_head_attention.py:23-45` - weight-gradient and backward
+  cache records.
+- `src/numpy_gpt/multi_head_attention.py:48-57` - split model width into heads.
+- `src/numpy_gpt/multi_head_attention.py:60-64` - merge heads back to model width.
+- `src/numpy_gpt/multi_head_attention.py:67-91` - head and weight validation.
+
+Then read the complete computation:
+
+- `src/numpy_gpt/multi_head_attention.py:94-147` - forward composition.
+- `src/numpy_gpt/multi_head_attention.py:150-198` - reverse-mode composition.
+- `tests/test_multi_head_attention.py:24-205` - primitive equivalence, shapes,
+  causality, all five gradient groups, zero values, and invalid configurations.
+
+Forward flow:
+
+```text
+X -> Linear(Wq) -> split heads -> RoPE -------\
+X -> Linear(Wk) -> split heads -> RoPE --------> causal attention
+X -> Linear(Wv) -> split heads ----------------/
+causal attention -> merge heads -> Linear(Wo) -> output
+```
+
+For model width 256 and four heads:
+
+```text
+before split: (batch, sequence, 256)
+after split:  (batch, 4, sequence, 64)
+after merge:  (batch, sequence, 256)
+```
+
+Backward follows the arrows in reverse. Because Q, K, and V all originated from
+the same input `X`, their three input gradients must be added:
+
+```text
+dX = dX_from_Q + dX_from_K + dX_from_V
+```
+
+The large gradient test independently perturbs the input and all four weight
+matrices. Passing only an output-shape test would not validate this composition.
+
+### Step 12 - Compose the complete SwiGLU feed-forward network
+
+Read:
+
+- `src/numpy_gpt/feed_forward.py:18-34` - weight-gradient and cache records.
+- `src/numpy_gpt/feed_forward.py:37-66` - the three compatible weight shapes.
+- `src/numpy_gpt/feed_forward.py:69-88` - forward composition.
+- `src/numpy_gpt/feed_forward.py:91-120` - backward composition.
+- `tests/test_feed_forward.py:26-183` - primitive equivalence, shapes, zero-value
+  behavior, all four gradient groups, branch addition, and invalid weights.
+
+Forward flow for one token matrix `X`:
+
+```text
+gate  = X W_gate
+value = X W_value
+hidden = SiLU(gate) * value
+output = hidden W_output
+```
+
+For the initial model:
+
+```text
+X:        (batch, sequence, 256)
+W_gate:   (256, 704)
+W_value:  (256, 704)
+hidden:   (batch, sequence, 704)
+W_output: (704, 256)
+output:   (batch, sequence, 256)
+```
+
+Backward reverses the output projection, splits at the multiplication inside
+SwiGLU, and returns through both input projections. Both branches originated from
+`X`, so their gradients add:
+
+```text
+dX = dX_from_gate + dX_from_value
+```
+
+This module acts independently at each sequence position. Attention mixes
+information between positions; the feed-forward module transforms the resulting
+representation within each position.
+
+### Step 13 - Understand the public package surface
+
+Read `src/numpy_gpt/__init__.py:3-90` last. It contains little mathematics; it
 selects which names users can import directly from `numpy_gpt`. Reading it earlier
 would show names without explaining their behavior.
 
-### Step 8 - Run the current learning checkpoint
+### Step 14 - Run the current learning checkpoint
 
 From the project root, run:
 
@@ -177,15 +438,15 @@ From the project root, run:
 python -m unittest discover -s tests -v
 ```
 
-The expected checkpoint is 16 tests followed by `OK`. If a test fails, read the
-test first, state what behavior it expected, and only then inspect the associated
-implementation.
+This 52-test checkpoint has passed with final status `OK`. When rerunning it, use
+the same success signal. If a test fails, read the test first, state what behavior
+it expected, and only then inspect the associated implementation.
 
 ## Track B: corpus and project operations
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 9 - Understand why files are not automatically training data
+### Step 15 - Understand why files are not automatically training data
 
 Read:
 
@@ -198,7 +459,7 @@ Read:
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
 - `docs/corpus-audit.md:49-58` - future preprocessing sequence.
 
-### Step 10 - Read the corpus auditor as an independent utility
+### Step 16 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -213,7 +474,7 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 11 - Read future identity work separately
+### Step 17 - Read future identity work separately
 
 Read:
 
@@ -245,16 +506,17 @@ configuration
     -> numerical gradient auditor
     -> Linear forward/backward
     -> Embedding forward/backward
+    -> RMSNorm and LayerNorm forward/backward
+    -> SiLU and SwiGLU forward/backward
+    -> RoPE forward/backward
+    -> causal scaled-dot-product attention
+    -> full multi-head attention composition
+    -> complete SwiGLU feed-forward composition
 ```
 
-After the 16-test checkpoint passes, the next chain will be:
+The next implementation chain will be:
 
 ```text
-RMSNorm and LayerNorm
-    -> SwiGLU
-    -> RoPE
-    -> causal scaled-dot-product attention
-    -> multi-head attention
-    -> one transformer block
+one pre-norm residual transformer block
+    -> stacked language model
 ```
-

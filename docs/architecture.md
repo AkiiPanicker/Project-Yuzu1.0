@@ -82,3 +82,21 @@ feature. OLMo is especially useful because its artifacts and training decisions
 are unusually transparent; Llama 3 informs dense-model practice; DeepSeek-V3 is
 an advanced branch for later efficiency experiments.
 
+## Implementation status - 2026-10-02
+
+Verified with deterministic and finite-difference tests:
+
+- Stable log-sum-exp, softmax, and cross-entropy.
+- Linear and Embedding forward/backward operations.
+- RMSNorm and conventional LayerNorm forward/backward operations.
+- Overflow-safe sigmoid, SiLU, and the elementwise SwiGLU core.
+- RoPE forward and inverse-rotation backward operations, including offsets.
+- Causal scaled-dot-product attention forward/backward operations.
+- Full bias-free multi-head self-attention composition.
+- Complete bias-free three-projection SwiGLU feed-forward composition.
+- Separate gate/value input projections, SwiGLU activation, output projection,
+  and summed gate/value input-gradient branches.
+
+Not yet implemented:
+
+- Residual transformer blocks, optimizer, training loop, and generation.

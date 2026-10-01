@@ -48,8 +48,8 @@ tests/                 Standard-library unittest suite
 
 ## Current status
 
-Phase 0 is active: corpus audit and architecture specification. No training data
-has been ingested yet.
+Phase 1 is active: numerical primitives are being implemented and gradient-checked.
+No training data has been ingested and no model training has started.
 
 ## Commands
 
@@ -70,4 +70,3 @@ python scripts/inventory_corpus.py
 8. Port the verified architecture to a GPU backend without changing semantics.
 9. Add instruction tuning, summarization, retrieval, voice, and tools as separate
    evaluated stages.
-
