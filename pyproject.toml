@@ -1,0 +1,19 @@
+[project]
+name = "numpy-gpt-from-scratch"
+version = "0.1.0"
+description = "A decoder-only language model built from first principles with NumPy"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

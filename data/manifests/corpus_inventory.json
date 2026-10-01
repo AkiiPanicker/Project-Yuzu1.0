@@ -1,0 +1,1420 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-01T08:02:58.991965+00:00",
+  "roots": [
+    "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+    "C:\\Users\\AKSHAT\\Desktop\\imp books and papers"
+  ],
+  "tools": {
+    "pdfinfo": "C:\\Users\\AKSHAT\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\poppler\\Library\\bin\\pdfinfo.EXE",
+    "pdftotext": "C:\\Program Files\\Git\\mingw64\\bin\\pdftotext.EXE"
+  },
+  "summary": {
+    "files": 58,
+    "unique_hashes": 55,
+    "bytes": 622419462,
+    "duplicate_groups": 3,
+    "by_suffix": {
+      ".docx": 1,
+      ".pdf": 57
+    },
+    "by_status": {
+      "excluded_exact_duplicate": 3,
+      "excluded_sensitive": 1,
+      "needs_ocr_and_rights_review": 7,
+      "needs_rights_review": 47
+    }
+  },
+  "files": [
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\A practical guide to quantative finanace interviews.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "A practical guide to quantative finanace interviews.pdf",
+      "suffix": ".pdf",
+      "bytes": 44595860,
+      "sha256": "50d8c343291cc5eb9a9cc8bdcbd55bbb90007b4af8cdadf24a63f64b91310b9d",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 213,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          107,
+          213
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\All of Statistics by Larry Wasserman.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "All of Statistics by Larry Wasserman.pdf",
+      "suffix": ".pdf",
+      "bytes": 47223405,
+      "sha256": "ef99985fce0b8aba7a40753f89b5fedaf6dad476b0d7977f36cd0f5e46704809",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 458,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          229,
+          458
+        ],
+        "sample_characters": 1212,
+        "sample_wordlike_tokens": 244,
+        "mean_characters_per_sampled_page": 404.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Brealey _ Myers - Investment Valuation-Mcgraw-Hill.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Brealey _ Myers - Investment Valuation-Mcgraw-Hill.pdf",
+      "suffix": ".pdf",
+      "bytes": 4018480,
+      "sha256": "96b2de8615e4e9e3492cbafb490ea665c69640c167fa15cb8c13a0d7c53c031b",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 1372,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          686,
+          1372
+        ],
+        "sample_characters": 4428,
+        "sample_wordlike_tokens": 733,
+        "mean_characters_per_sampled_page": 1476.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Calculus Early transcendentals Jame Stewart.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Calculus Early transcendentals Jame Stewart.pdf",
+      "suffix": ".pdf",
+      "bytes": 32261823,
+      "sha256": "650f81c7daef47adaa6edfa58b1ba76a892bb1f220cfc07ab676cfc9cb4a6a64",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 1397,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          699,
+          1397
+        ],
+        "sample_characters": 3747,
+        "sample_wordlike_tokens": 754,
+        "mean_characters_per_sampled_page": 1249.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Financial_statements_a_step_by_step_guid.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Financial_statements_a_step_by_step_guid.pdf",
+      "suffix": ".pdf",
+      "bytes": 9668525,
+      "sha256": "ea0cfb80a26d09e2d8665c34f422f2a3ca612ad10443f137b3b85af54579432b",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 263,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          132,
+          263
+        ],
+        "sample_characters": 3472,
+        "sample_wordlike_tokens": 549,
+        "mean_characters_per_sampled_page": 1157.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Introduction to Probablity Joseph K Blitzstein.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Introduction to Probablity Joseph K Blitzstein.pdf",
+      "suffix": ".pdf",
+      "bytes": 6094022,
+      "sha256": "ebcdd3dc2968b5f97dc4ad5baec20e0a0dc40fd2f25b482d96c9f2e82514a70d",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 64,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          32,
+          64
+        ],
+        "sample_characters": 5305,
+        "sample_wordlike_tokens": 990,
+        "mean_characters_per_sampled_page": 1768.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Investment_Banking.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Investment_Banking.pdf",
+      "suffix": ".pdf",
+      "bytes": 2284572,
+      "sha256": "b6b08533b8f1d6d624639f682b3a2b5c5fcaa06d06895fcf1ed4456b3464a4ea",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 332,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          166,
+          332
+        ],
+        "sample_characters": 5337,
+        "sample_wordlike_tokens": 823,
+        "mean_characters_per_sampled_page": 1779.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Linear Algebra and Its Applications Gilbert Strang.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Linear Algebra and Its Applications Gilbert Strang.pdf",
+      "suffix": ".pdf",
+      "bytes": 5313691,
+      "sha256": "21196249b7eb251362fea103a416da4c5cc6b39fe76074720000d625e8e7c30a",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 545,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          273,
+          545
+        ],
+        "sample_characters": 1898,
+        "sample_wordlike_tokens": 361,
+        "mean_characters_per_sampled_page": 632.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Monte Carlo methods in financial engineering by Paul Glasserman Springer.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Monte Carlo methods in financial engineering by Paul Glasserman Springer.pdf",
+      "suffix": ".pdf",
+      "bytes": 3257320,
+      "sha256": "0412e55b00cbdd5c314d243b6b5ac2f18b68ed6c8cfbc2cf234e8369b0dadb97",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 610,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          305,
+          610
+        ],
+        "sample_characters": 2612,
+        "sample_wordlike_tokens": 513,
+        "mean_characters_per_sampled_page": 870.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Precalculus mathematics in a nutshell by George Finlay Simmons.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Precalculus mathematics in a nutshell by George Finlay Simmons.pdf",
+      "suffix": ".pdf",
+      "bytes": 10377297,
+      "sha256": "30dd0f4444fc5a56ba5abdf9549aee2cc354af454c67324e6b6cc51df00bfadc",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 63,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          32,
+          63
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Python for Finance by Yves Hilpisch.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Python for Finance by Yves Hilpisch.pdf",
+      "suffix": ".pdf",
+      "bytes": 11002456,
+      "sha256": "48ece6bbe994b0c1ca115bfdf8590b4875be941ea7ca992612ca985a831c7bcc",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 605,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          303,
+          605
+        ],
+        "sample_characters": 3620,
+        "sample_wordlike_tokens": 583,
+        "mean_characters_per_sampled_page": 1206.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Statistics by David Freedman.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Statistics by David Freedman.pdf",
+      "suffix": ".pdf",
+      "bytes": 130201241,
+      "sha256": "896bf44ba5b8ff2b4f63b040f24b87f2affec782c14eb08c74b30f3163729297",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 715,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          358,
+          715
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\TechnicalAnalysisOfTheFinancialMarkets.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "TechnicalAnalysisOfTheFinancialMarkets.pdf",
+      "suffix": ".pdf",
+      "bytes": 21326616,
+      "sha256": "8e3a25ce68bd78bea461aa8eec16eda289c8632687ea933232e393890ec912d8",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 596,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          298,
+          596
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\The Basics of Finance_ An Introduction to Financial Markets, Business Finance, and Portfolio Management (Frank J. Fabozzi Series) ( PDFDrive ).pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "The Basics of Finance_ An Introduction to Financial Markets, Business Finance, and Portfolio Management (Frank J. Fabozzi Series) ( PDFDrive ).pdf",
+      "suffix": ".pdf",
+      "bytes": 3557658,
+      "sha256": "acaa3064cf955e45961eead2e0f4e540cbf6a364e34dcbf128637ac6dfe041b1",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 665,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          333,
+          665
+        ],
+        "sample_characters": 3164,
+        "sample_wordlike_tokens": 523,
+        "mean_characters_per_sampled_page": 1054.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Thinking Strategically by Avinash Dixit.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Thinking Strategically by Avinash Dixit.pdf",
+      "suffix": ".pdf",
+      "bytes": 2581953,
+      "sha256": "cac4a0873811b3e625efc95d3e965ffcec6e9691966cc3ab433e7a8126bc36a9",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 417,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          209,
+          417
+        ],
+        "sample_characters": 2859,
+        "sample_wordlike_tokens": 499,
+        "mean_characters_per_sampled_page": 953.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Thinking-strategically-the-competitive-edge-in-business-politics.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Thinking-strategically-the-competitive-edge-in-business-politics.pdf",
+      "suffix": ".pdf",
+      "bytes": 2591114,
+      "sha256": "160f0f98d2227be072355397c776045ccb9cbd9314a4fbc3e1a1f8c9d6dfa872",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 396,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          198,
+          396
+        ],
+        "sample_characters": 2961,
+        "sample_wordlike_tokens": 502,
+        "mean_characters_per_sampled_page": 987.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Volatility Surface by Jim Gatheral.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\Quant Books",
+      "name": "Volatility Surface by Jim Gatheral.pdf",
+      "suffix": ".pdf",
+      "bytes": 1466040,
+      "sha256": "574bb5db7ce7a3af0f62dc0f925cf78e080ead89b9922d32488fe5a045b169b7",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 210,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          105,
+          210
+        ],
+        "sample_characters": 2170,
+        "sample_wordlike_tokens": 356,
+        "mean_characters_per_sampled_page": 723.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\1703.00236v4.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "1703.00236v4.pdf",
+      "suffix": ".pdf",
+      "bytes": 446924,
+      "sha256": "b13b21672ce6f5f51d8cf4a98ce3629e6d38d439a4e422ab451f9dad998f9271",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 15,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          8,
+          15
+        ],
+        "sample_characters": 6581,
+        "sample_wordlike_tokens": 1202,
+        "mean_characters_per_sampled_page": 2193.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\17142797-Case-in-Point.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "17142797-Case-in-Point.pdf",
+      "suffix": ".pdf",
+      "bytes": 10476296,
+      "sha256": "741bd23f55ec74a0e11215e199f5efd55981c88a587234a79e7678c6853a8740",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 185,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          93,
+          185
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\2503.04094v1.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "2503.04094v1.pdf",
+      "suffix": ".pdf",
+      "bytes": 4818797,
+      "sha256": "2c02e015432d300d7b007e7b755684760445c4ec60f783ecf658cf4a67d0ea19",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 25,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          13,
+          25
+        ],
+        "sample_characters": 6652,
+        "sample_wordlike_tokens": 1057,
+        "mean_characters_per_sampled_page": 2217.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\68ff5bb2e529a_Euphony_The_Marketing_Case_Caselet.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "68ff5bb2e529a_Euphony_The_Marketing_Case_Caselet.pdf",
+      "suffix": ".pdf",
+      "bytes": 385044,
+      "sha256": "4c948855bdb08f825309b73a6bfebb45d45c05cfd7c7001d75cc5ea53dd475fc",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 4,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          2,
+          4
+        ],
+        "sample_characters": 4834,
+        "sample_wordlike_tokens": 719,
+        "mean_characters_per_sampled_page": 1611.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\9.-Stern-MCA-Casebook-2019.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "9.-Stern-MCA-Casebook-2019.pdf",
+      "suffix": ".pdf",
+      "bytes": 2682438,
+      "sha256": "9f55f57286a776e23be421849d89ae90c01d1fee25a5fd3de8ab4b7d732d3fb6",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 199,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          100,
+          199
+        ],
+        "sample_characters": 2497,
+        "sample_wordlike_tokens": 367,
+        "mean_characters_per_sampled_page": 832.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\AI layoff trap.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "AI layoff trap.pdf",
+      "suffix": ".pdf",
+      "bytes": 1580241,
+      "sha256": "45b4b4ce067cfbe8d7a40e5c3b0d718da52e8c87bc159cc6a8b538fe1a16f6cf",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 53,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          27,
+          53
+        ],
+        "sample_characters": 6116,
+        "sample_wordlike_tokens": 985,
+        "mean_characters_per_sampled_page": 2038.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Bravo Two-zero PDF.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Bravo Two-zero PDF.pdf",
+      "suffix": ".pdf",
+      "bytes": 2633637,
+      "sha256": "b637ac4513dc59267e483d53d75e611034eb87051ede3235fae9f831b29961b2",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 184,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          92,
+          184
+        ],
+        "sample_characters": 811,
+        "sample_wordlike_tokens": 135,
+        "mean_characters_per_sampled_page": 270.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\BREALEY-MYERS-Principles-of-Corporate-Finance-7e.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "BREALEY-MYERS-Principles-of-Corporate-Finance-7e.pdf",
+      "suffix": ".pdf",
+      "bytes": 12196479,
+      "sha256": "0ebb8bf5d5edee40b9386dd13574628ca021983af552cf0844e95ccf57349267",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 1062,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          531,
+          1062
+        ],
+        "sample_characters": 4958,
+        "sample_wordlike_tokens": 849,
+        "mean_characters_per_sampled_page": 1652.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\bws_book.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "bws_book.pdf",
+      "suffix": ".pdf",
+      "bytes": 2847575,
+      "sha256": "905d9ef113c6a2fb194363844e81343a25a553c5cafe660effe338025e784ecd",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 698,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          349,
+          698
+        ],
+        "sample_characters": 2336,
+        "sample_wordlike_tokens": 443,
+        "mean_characters_per_sampled_page": 778.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Case-in-Point-PDF.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Case-in-Point-PDF.pdf",
+      "suffix": ".pdf",
+      "bytes": 3559780,
+      "sha256": "0f6676fa303dfae5d8e700c2e0e5383d3fcf5d17323abca9e77e1a8cfe02b557",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 367,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          184,
+          367
+        ],
+        "sample_characters": 1523,
+        "sample_wordlike_tokens": 255,
+        "mean_characters_per_sampled_page": 507.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\clamp.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "clamp.pdf",
+      "suffix": ".pdf",
+      "bytes": 980279,
+      "sha256": "4a2e1306fe7417997569de7f8fea2db16249c75c83f08128c1b7202167ce3726",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 11,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          6,
+          11
+        ],
+        "sample_characters": 13564,
+        "sample_wordlike_tokens": 2154,
+        "mean_characters_per_sampled_page": 4521.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Come as You Are PDF.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Come as You Are PDF.pdf",
+      "suffix": ".pdf",
+      "bytes": 2597222,
+      "sha256": "bff08d167c487f346780213f5c35346575582ed9c7845320db5cdff84a373b1c",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 121,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          61,
+          121
+        ],
+        "sample_characters": 971,
+        "sample_wordlike_tokens": 183,
+        "mean_characters_per_sampled_page": 323.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\CP Book.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "CP Book.pdf",
+      "suffix": ".pdf",
+      "bytes": 1099959,
+      "sha256": "3a04509c7cc2bde6717907d52821c7dd159f92c3a73199f5f6664bf0218a947e",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 296,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          148,
+          296
+        ],
+        "sample_characters": 1167,
+        "sample_wordlike_tokens": 227,
+        "mean_characters_per_sampled_page": 389.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Digital Design 5th Edition - M Morris Mano and Michael D Ciletti.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Digital Design 5th Edition - M Morris Mano and Michael D Ciletti.pdf",
+      "suffix": ".pdf",
+      "bytes": 3135536,
+      "sha256": "43c394158a01791d289709c23abcabad599fb6884ca23d6d0deae31c7b5850f3",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 565,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          283,
+          565
+        ],
+        "sample_characters": 1258,
+        "sample_wordlike_tokens": 224,
+        "mean_characters_per_sampled_page": 419.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Fundamentals of Rocket Propulsion.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Fundamentals of Rocket Propulsion.pdf",
+      "suffix": ".pdf",
+      "bytes": 10447995,
+      "sha256": "bee0e71715258627561d92959d57a67be6e4fa6c55106c9d06a0bb0d4c789240",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 483,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          242,
+          483
+        ],
+        "sample_characters": 1872,
+        "sample_wordlike_tokens": 298,
+        "mean_characters_per_sampled_page": 624.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Games People Play PDF.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Games People Play PDF.pdf",
+      "suffix": ".pdf",
+      "bytes": 2297649,
+      "sha256": "e83862391cda42da4146d45284ab82fc38414be046ba8df33a48406fb0131ba9",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 104,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          52,
+          104
+        ],
+        "sample_characters": 49,
+        "sample_wordlike_tokens": 9,
+        "mean_characters_per_sampled_page": 16.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Goldstein - Classical Mechanics.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Goldstein - Classical Mechanics.pdf",
+      "suffix": ".pdf",
+      "bytes": 10979544,
+      "sha256": "5f979ce043a07da696461de470d8ffcbf77f8e2ced85564a20865cce125cdc58",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 665,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          333,
+          665
+        ],
+        "sample_characters": 3151,
+        "sample_wordlike_tokens": 543,
+        "mean_characters_per_sampled_page": 1050.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Haruki Murakami - Norwegian Wood.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Haruki Murakami - Norwegian Wood.pdf",
+      "suffix": ".pdf",
+      "bytes": 868748,
+      "sha256": "26a7798f1d8acd8c423103ab781a001b2e623937dbc39e2415608089a62f52de",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 353,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          177,
+          353
+        ],
+        "sample_characters": 3307,
+        "sample_wordlike_tokens": 593,
+        "mean_characters_per_sampled_page": 1102.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\hbs_older.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "hbs_older.pdf",
+      "suffix": ".pdf",
+      "bytes": 3072107,
+      "sha256": "099ada116624fcc1421bbc07341eaddc3c4c5d60372df99c5989f7a6a477a83a",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 114,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          57,
+          114
+        ],
+        "sample_characters": 5263,
+        "sample_wordlike_tokens": 889,
+        "mean_characters_per_sampled_page": 1754.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Japanese Candlestick Charting Techniques, 2nd Edition, Steve Nison_text.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Japanese Candlestick Charting Techniques, 2nd Edition, Steve Nison_text.pdf",
+      "suffix": ".pdf",
+      "bytes": 10260730,
+      "sha256": "817beff9efd1994422b1e69a6b40e646e5d4b88933ccb973f74c9e9b11a81413",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 298,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          149,
+          298
+        ],
+        "sample_characters": 3037,
+        "sample_wordlike_tokens": 539,
+        "mean_characters_per_sampled_page": 1012.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Last Will and Testament.docx",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Last Will and Testament.docx",
+      "suffix": ".docx",
+      "bytes": 18614,
+      "sha256": "c15c356df083a4dc7e0a64a4eadcfe9d6361aa432514690358a7bf1ba6310bd4",
+      "status": "excluded_sensitive",
+      "status_reasons": [
+        "filename indicates personal legal content"
+      ]
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Mathematical_Methods2021.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Mathematical_Methods2021.pdf",
+      "suffix": ".pdf",
+      "bytes": 2876348,
+      "sha256": "bb1787bdf485bb6b20ce65b8184f90558b7dc2402dfdc35f4160c1b21b7bd7c6",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 75,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          38,
+          75
+        ],
+        "sample_characters": 4757,
+        "sample_wordlike_tokens": 849,
+        "mean_characters_per_sampled_page": 1585.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Ng_MachineLearningYearning.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Ng_MachineLearningYearning.pdf",
+      "suffix": ".pdf",
+      "bytes": 4206689,
+      "sha256": "eb92b89dada075c6702b5257b114db4e162011ad05a984fa28eb174cf416fe06",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 118,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          59,
+          118
+        ],
+        "sample_characters": 2131,
+        "sample_wordlike_tokens": 373,
+        "mean_characters_per_sampled_page": 710.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Niccolo Machiavelli - The Prince.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Niccolo Machiavelli - The Prince.pdf",
+      "suffix": ".pdf",
+      "bytes": 4630481,
+      "sha256": "605bce82448b52781ffe80c5919c7a5cefe574c3850f7a3f45917b89b678394d",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 140,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          70,
+          140
+        ],
+        "sample_characters": 3724,
+        "sample_wordlike_tokens": 713,
+        "mean_characters_per_sampled_page": 1241.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Peter Norvig, Stuart Russell - Artificial Intelligence A Modern Approach.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Peter Norvig, Stuart Russell - Artificial Intelligence A Modern Approach.pdf",
+      "suffix": ".pdf",
+      "bytes": 22167263,
+      "sha256": "5254b4765da3412a1f3b1605c1c1c5c3cd0337c77887db71ea2cab91a87d5426",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 1127,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          564,
+          1127
+        ],
+        "sample_characters": 5801,
+        "sample_wordlike_tokens": 1046,
+        "mean_characters_per_sampled_page": 1933.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Poker Theory.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Poker Theory.pdf",
+      "suffix": ".pdf",
+      "bytes": 3126412,
+      "sha256": "3cb5c40c508cdcbe29b4f9ec564a30d900527063f4b65488277c17bee1939451",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 170,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          85,
+          170
+        ],
+        "sample_characters": 10535,
+        "sample_wordlike_tokens": 1888,
+        "mean_characters_per_sampled_page": 3511.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Principal of Economics.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Principal of Economics.pdf",
+      "suffix": ".pdf",
+      "bytes": 29540939,
+      "sha256": "539021543c89f65c477e3b677fbbf5068b09c43b85376a0b9ec94ed8ae30bf0b",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 866,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          433,
+          866
+        ],
+        "sample_characters": 3432,
+        "sample_wordlike_tokens": 558,
+        "mean_characters_per_sampled_page": 1144.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Rich-Dad-s-Prophecy.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Rich-Dad-s-Prophecy.pdf",
+      "suffix": ".pdf",
+      "bytes": 4401853,
+      "sha256": "57d67ebeea94dd878fc9cca1588c259c6d75c6ba7cf610eb37a9e51716fc3ec3",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 301,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          151,
+          301
+        ],
+        "sample_characters": 2488,
+        "sample_wordlike_tokens": 448,
+        "mean_characters_per_sampled_page": 829.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\rstb20061938.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "rstb20061938.pdf",
+      "suffix": ".pdf",
+      "bytes": 347456,
+      "sha256": "f909a565c84c95a789851ae742390ba7e44dbe3bddacfc2922b26d683de4e9f2",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 14,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          7,
+          14
+        ],
+        "sample_characters": 13173,
+        "sample_wordlike_tokens": 1980,
+        "mean_characters_per_sampled_page": 4391.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\SkienaTheAlgorithmDesignManual.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "SkienaTheAlgorithmDesignManual.pdf",
+      "suffix": ".pdf",
+      "bytes": 4082875,
+      "sha256": "fe1a100b3f30b910cb33bcc64d90f4d62892e99bd775f28cc2933d1c359640d4",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 739,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          370,
+          739
+        ],
+        "sample_characters": 4337,
+        "sample_wordlike_tokens": 715,
+        "mean_characters_per_sampled_page": 1445.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Smruti R. Sarangi - Basic Computer Architecture (2021).pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Smruti R. Sarangi - Basic Computer Architecture (2021).pdf",
+      "suffix": ".pdf",
+      "bytes": 10520433,
+      "sha256": "a97af14c56d736c5c7e1632b40feea145bd85a72959ccbef1b041b0757ab0d22",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 673,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          337,
+          673
+        ],
+        "sample_characters": 1422,
+        "sample_wordlike_tokens": 230,
+        "mean_characters_per_sampled_page": 474.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Steve-Nison-Japanese-Candlestick-Charting-Techniques-Prentice-Hall-Press-2001.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Steve-Nison-Japanese-Candlestick-Charting-Techniques-Prentice-Hall-Press-2001.pdf",
+      "suffix": ".pdf",
+      "bytes": 10885574,
+      "sha256": "6a13b690636f0ea50e465191784085d842948d36621c55260f91d7ffe4c8da81",
+      "status": "needs_ocr_and_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded",
+        "sampled pages have little or no extractable text"
+      ],
+      "pages": 298,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          149,
+          298
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Steve_Shreve_Stochastic_Calculus_for_Finance_I.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Steve_Shreve_Stochastic_Calculus_for_Finance_I.pdf",
+      "suffix": ".pdf",
+      "bytes": 8252653,
+      "sha256": "7ab1b469995c1d39bd5b05d7564ac5c5a45b2f99377d3eb7f5dd1b690f75e8de",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 200,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          100,
+          200
+        ],
+        "sample_characters": 3533,
+        "sample_wordlike_tokens": 649,
+        "mean_characters_per_sampled_page": 1177.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\TechnicalAnalysisOfTheFinancialMarkets.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "TechnicalAnalysisOfTheFinancialMarkets.pdf",
+      "suffix": ".pdf",
+      "bytes": 21326616,
+      "sha256": "8e3a25ce68bd78bea461aa8eec16eda289c8632687ea933232e393890ec912d8",
+      "status": "excluded_exact_duplicate",
+      "status_reasons": [
+        "byte-for-byte duplicate"
+      ],
+      "pages": 596,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          298,
+          596
+        ],
+        "sample_characters": 0,
+        "sample_wordlike_tokens": 0,
+        "mean_characters_per_sampled_page": 0.0
+      },
+      "duplicate_of": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\TechnicalAnalysisOfTheFinancialMarkets.pdf"
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\TensorFlow_Cheatsheet_Zero_To_Mastery_V1.01.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "TensorFlow_Cheatsheet_Zero_To_Mastery_V1.01.pdf",
+      "suffix": ".pdf",
+      "bytes": 1667147,
+      "sha256": "85f320d26153162f6f50b5c79a1294ea64cf3b97c9eeb5d9236148df46c0247b",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 26,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          13,
+          26
+        ],
+        "sample_characters": 4108,
+        "sample_wordlike_tokens": 669,
+        "mean_characters_per_sampled_page": 1369.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\TEXT_FRANK M WHITE_FLUID MECHNICS.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "TEXT_FRANK M WHITE_FLUID MECHNICS.pdf",
+      "suffix": ".pdf",
+      "bytes": 28524202,
+      "sha256": "59043dfd4b0b2e92a8baee83a48dfe8425488eddabc16c1313a8fbef9f4081a1",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 885,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          443,
+          885
+        ],
+        "sample_characters": 2129,
+        "sample_wordlike_tokens": 450,
+        "mean_characters_per_sampled_page": 709.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\The Basics of Finance_ An Introduction to Financial Markets, Business Finance, and Portfolio Management (Frank J. Fabozzi Series) ( PDFDrive ).pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "The Basics of Finance_ An Introduction to Financial Markets, Business Finance, and Portfolio Management (Frank J. Fabozzi Series) ( PDFDrive ).pdf",
+      "suffix": ".pdf",
+      "bytes": 3557658,
+      "sha256": "acaa3064cf955e45961eead2e0f4e540cbf6a364e34dcbf128637ac6dfe041b1",
+      "status": "excluded_exact_duplicate",
+      "status_reasons": [
+        "byte-for-byte duplicate"
+      ],
+      "pages": 665,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          333,
+          665
+        ],
+        "sample_characters": 3164,
+        "sample_wordlike_tokens": 523,
+        "mean_characters_per_sampled_page": 1054.7
+      },
+      "duplicate_of": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\The Basics of Finance_ An Introduction to Financial Markets, Business Finance, and Portfolio Management (Frank J. Fabozzi Series) ( PDFDrive ).pdf"
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\The+48+Laws+Of+Power.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "The+48+Laws+Of+Power.pdf",
+      "suffix": ".pdf",
+      "bytes": 31058156,
+      "sha256": "5586435106a4e20fca2fdf527fd9ce405b6c1f65e20a4340f7bac46f8b3f91c6",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 476,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          238,
+          476
+        ],
+        "sample_characters": 1190,
+        "sample_wordlike_tokens": 256,
+        "mean_characters_per_sampled_page": 396.7
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Thinking-strategically-the-competitive-edge-in-business-politics.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Thinking-strategically-the-competitive-edge-in-business-politics.pdf",
+      "suffix": ".pdf",
+      "bytes": 2591114,
+      "sha256": "160f0f98d2227be072355397c776045ccb9cbd9314a4fbc3e1a1f8c9d6dfa872",
+      "status": "excluded_exact_duplicate",
+      "status_reasons": [
+        "byte-for-byte duplicate"
+      ],
+      "pages": 396,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          198,
+          396
+        ],
+        "sample_characters": 2961,
+        "sample_wordlike_tokens": 502,
+        "mean_characters_per_sampled_page": 987.0
+      },
+      "duplicate_of": "C:\\Users\\AKSHAT\\Desktop\\Quant Books\\Thinking-strategically-the-competitive-edge-in-business-politics.pdf"
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\TKMFullText.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "TKMFullText.pdf",
+      "suffix": ".pdf",
+      "bytes": 503115,
+      "sha256": "a16b5fa41271625296e72c0f3b15cf915027b2e1d5311371edfd73f19edc71d6",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 285,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          143,
+          285
+        ],
+        "sample_characters": 3571,
+        "sample_wordlike_tokens": 696,
+        "mean_characters_per_sampled_page": 1190.3
+      }
+    },
+    {
+      "source_path": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers\\Unbiased DL of Deep Generative models with Structurd Discrete Representation.pdf",
+      "source_root": "C:\\Users\\AKSHAT\\Desktop\\imp books and papers",
+      "name": "Unbiased DL of Deep Generative models with Structurd Discrete Representation.pdf",
+      "suffix": ".pdf",
+      "bytes": 2944811,
+      "sha256": "295de0e226f87adf19f47f93a4add7aece53e95e94db3f4dc106d8129c59e2b6",
+      "status": "needs_rights_review",
+      "status_reasons": [
+        "training rights have not been recorded"
+      ],
+      "pages": 38,
+      "extraction": {
+        "status": "sampled",
+        "sampled_pages": [
+          1,
+          19,
+          38
+        ],
+        "sample_characters": 7406,
+        "sample_wordlike_tokens": 1221,
+        "mean_characters_per_sampled_page": 2468.7
+      }
+    }
+  ]
+}

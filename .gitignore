@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.idea/
+.vscode/
+
+# Generated corpora and model artifacts stay local.
+data/processed/
+data/raw/
+checkpoints/
+runs/
+*.npy
+*.npz
+
