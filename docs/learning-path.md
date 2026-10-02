@@ -1,6 +1,6 @@
 # Learning path: rebuild the project in your head
 
-This guide is pinned to the source layout as of project state version 18. Source
+This guide is pinned to the source layout as of project state version 23. Source
 line numbers will move as the implementation grows, so update this file whenever
 the referenced code changes substantially.
 
@@ -542,13 +542,243 @@ One seeded `numpy.random.Generator` produces every random array in a fixed order
 The named traversal exposes each unique parameter exactly once; the tied embedding
 appears once even though forward uses it for both lookup and output projection.
 
-### Step 16 - Understand the public package surface
+### Step 16 - Update parameters with clipping and AdamW
 
-Read `src/numpy_gpt/__init__.py:3-118` last. It contains little mathematics; it
+Read:
+
+- `src/numpy_gpt/model.py:253-290` - matching deterministic parameter and gradient
+  traversal.
+- `src/numpy_gpt/optimizer.py:16-42` - clipping results, optimizer state, and
+  per-step terminal statistics.
+- `src/numpy_gpt/optimizer.py:64-138` - named-array validation, overflow-resistant
+  global norm, and copy-based clipping.
+- `src/numpy_gpt/optimizer.py:141-190` - zero moment allocation and state
+  validation.
+- `src/numpy_gpt/optimizer.py:193-307` - one atomic, bias-corrected AdamW step.
+- `tests/test_optimizer.py:29-265` - name/shape alignment, clipping, two update
+  steps, decay exclusions, and failure-before-mutation contracts.
+
+One norm covers every model gradient rather than clipping each tensor separately:
+
+```text
+G = sqrt(sum over every gradient element g_i^2)
+c = min(1, max_norm / (G + clipping_epsilon))
+g_clipped = c * g
+```
+
+The norm calculation first divides by the largest absolute gradient. This avoids
+overflow in the intermediate squares without changing the mathematical norm.
+Clipping returns copies, so the gradients produced by backward remain available
+for debugging.
+
+AdamW then updates its first and second moments at step `t`:
+
+```text
+m_t = beta1 * m_(t-1) + (1 - beta1) * g_clipped
+v_t = beta2 * v_(t-1) + (1 - beta2) * g_clipped^2
+m_hat = m_t / (1 - beta1^t)
+v_hat = v_t / (1 - beta2^t)
+
+parameter = parameter
+          - learning_rate * m_hat / (sqrt(v_hat) + adam_epsilon)
+          - learning_rate * weight_decay * parameter
+```
+
+The final term is decoupled weight decay: it acts directly on the parameter
+rather than being mixed into the adaptive gradient moments. Matrix parameters,
+including the tied embedding table, receive decay. One-dimensional RMSNorm scales
+do not. The entire update is calculated and checked for finite values before any
+parameter array is modified, preventing half-applied invalid steps.
+
+### Step 17 - Save and restore exact training state
+
+Read:
+
+- `src/numpy_gpt/checkpoint.py:23-34` - format version and returned checkpoint
+  record.
+- `src/numpy_gpt/checkpoint.py:37-133` - expected model names/shapes and strict
+  parameter/moment validation.
+- `src/numpy_gpt/checkpoint.py:136-206` - JSON-safe RNG-state encoding without
+  Python object arrays.
+- `src/numpy_gpt/checkpoint.py:210-256` - archive assembly, file synchronization,
+  and atomic replacement.
+- `src/numpy_gpt/checkpoint.py:259-328` - manifest validation and reconstruction
+  of the nested model parameters.
+- `src/numpy_gpt/checkpoint.py:331-422` - non-pickle loading and all archive
+  contracts.
+- `tests/test_checkpoint.py:72-251` - exact round trip, identical next update,
+  non-object arrays, version/shape rejection, and overwrite protection.
+
+Each checkpoint is one NumPy `.npz` archive containing:
+
+```text
+manifest bytes:
+    format version
+    complete ModelConfig
+    deterministic parameter names
+    optimizer step
+    optional random-generator state
+
+for every parameter i:
+    parameter_i
+    first_moment_i
+    second_moment_i
+```
+
+The JSON manifest is stored as raw `uint8` bytes. Model and optimizer values are
+ordinary numeric arrays, and loading always uses `allow_pickle=False`. This keeps
+the file inspectable without allowing a checkpoint to deserialize arbitrary
+Python objects.
+
+Saving first validates all state, writes a temporary file in the destination
+directory, flushes it to storage, and then atomically replaces the destination.
+The most important test does more than compare saved arrays: it updates a model,
+saves and reloads it, applies the same next gradient to both copies, and requires
+the next parameters and Adam moments to match exactly.
+
+### Step 18 - Turn text into deterministic next-byte batches
+
+Read:
+
+- `src/numpy_gpt/byte_data.py:16-31` - immutable split and batch records.
+- `src/numpy_gpt/byte_data.py:34-48` - positive-size and byte-range contracts.
+- `src/numpy_gpt/byte_data.py:51-72` - UTF-8 encoding and generated-byte decoding.
+- `src/numpy_gpt/byte_data.py:75-105` - contiguous train/validation splitting.
+- `src/numpy_gpt/byte_data.py:108-138` - seeded next-token window sampling.
+- `tests/test_byte_data.py:24-157` - Unicode round trips, invalid bytes, split
+  integrity, shifted targets, RNG restoration, and invalid contracts.
+
+UTF-8 converts text into the model's fixed vocabulary of 256 byte values:
+
+```text
+text -> UTF-8 bytes -> integers in 0..255
+```
+
+An English character is usually one byte, while many other characters use
+multiple bytes. The model predicts bytes, not Unicode characters. During
+generation, replacement decoding keeps invalid partial byte sequences visible
+instead of crashing the terminal.
+
+The corpus is divided once at a fixed boundary:
+
+```text
+[---------------- train ----------------|------ validation ------]
+```
+
+Training windows sample only from the train array, and validation windows sample
+only from the validation array. No context window crosses the boundary. Each
+sampled window contains `context_length + 1` bytes; the last dimension is split
+into inputs and one-position-shifted targets:
+
+```text
+window:  [b0, b1, b2, b3, b4]
+inputs:  [b0, b1, b2, b3]
+targets: [b1, b2, b3, b4]
+```
+
+Sampling uses an explicit `numpy.random.Generator`. Saving its state in the
+checkpoint and restoring it must reproduce the exact next batch, which prevents
+silent data-order changes after resuming training.
+
+### Step 19 - Compose one complete update without hiding the mathematics
+
+Read:
+
+- `src/numpy_gpt/training.py:27-46` - immutable evaluation and training records.
+- `src/numpy_gpt/training.py:49-83` - batch contracts and perplexity conversion.
+- `src/numpy_gpt/training.py:86-101` - the read-only evaluation path.
+- `src/numpy_gpt/training.py:104-148` - loss, backward, clipping, and AdamW update.
+- `tests/test_training.py:31-48` - the tiny configuration and fixed byte batch.
+- `tests/test_training.py:51-253` - direct composition, mutation, clipping, and
+  invalid-input tests.
+
+The training path is an explicit composition of already-tested pieces:
+
+```text
+ByteBatch
+    -> language_model_forward
+    -> mean cross_entropy_with_logits
+    -> language_model_backward
+    -> named gradients
+    -> global-norm clipping inside AdamW
+    -> parameter mutation + next optimizer state
+```
+
+The mean reduction matters. If a batch contains `N` target bytes, the logits
+gradient is divided by `N`, so changing batch size does not silently multiply the
+effective learning rate. The reported loss belongs to the parameters before the
+update; the optimizer diagnostics describe the update just applied.
+
+Evaluation deliberately stops after mean cross-entropy:
+
+```text
+ByteBatch -> forward -> mean loss -> metrics
+```
+
+It does not call backward and does not receive optimizer state. The test calls
+evaluation twice and requires bit-identical parameters afterward. This is the
+boundary that will later keep validation measurements from contaminating
+training.
+
+Perplexity is `exp(mean loss)`. It is interpretable as the model's effective
+number of equally plausible next-token choices, but byte-level perplexity cannot
+be compared directly with the subword-token perplexity of another model.
+
+### Step 20 - Control repeated updates without losing reproducibility
+
+Read:
+
+- `src/numpy_gpt/trainer.py:52-139` - loop configuration, terminal metrics, and
+  returned run artifacts.
+- `src/numpy_gpt/trainer.py:143-226` - token validation, SHA-256 split identity,
+  atomic run manifests, and JSON-lines helpers.
+- `src/numpy_gpt/trainer.py:229-394` - initialization, validation, updates,
+  metrics, checkpoint events, and return state.
+- `configs/smoke.json:1-14` - the deliberately small CPU smoke model.
+- `scripts/train_smoke.py:26-51` - CLI options and synthetic text construction.
+- `scripts/train_smoke.py:54-115` - fresh/resumed setup and visible execution.
+- `tests/test_trainer.py:30-54` - tiny integration-test fixtures.
+- `tests/test_trainer.py:57-257` - validation, observability, checkpoint, and
+  exact-resume tests.
+
+`max_steps` is an absolute optimizer-step target. If a checkpoint is already at
+step 20, resuming with `--steps 30` performs ten more updates. Treating 30 as
+"thirty additional steps" would silently overshoot the intended run.
+
+The two random streams have different jobs:
+
+```text
+training RNG -> new sampled batch each step -> saved in every checkpoint
+fixed validation seed -> same validation batch -> comparable validation loss
+```
+
+Restoring the training RNG, parameters, Adam moments, and step must make the next
+updates bit-identical to uninterrupted training. The integration test compares
+all resulting parameters and first moments after an interrupted/resumed run.
+
+Every logged step is written both to the terminal and `metrics.jsonl`. It reports
+step, token-equivalent epoch, train loss, validation loss and perplexity, learning
+rate, gradient norm, clip coefficient, tokens per second, and elapsed time.
+Checkpoint events are separate JSON records. The epoch is an estimate based on
+sampled target-token count; random windows can repeat, so it is not a claim that
+every corpus byte was visited once.
+
+`run_manifest.json` records the model configuration, optimizer hyperparameters,
+token counts, and SHA-256 fingerprints of the train and validation arrays. A
+resume using different data or learning settings is rejected before another
+update, rather than silently mixing incompatible experiments.
+
+The smoke script defaults to generated repetitive text. This is a mechanics and
+overfitting check, not useful language-model training, and it does not ingest the
+audited books or papers.
+
+### Step 21 - Understand the public package surface
+
+Read `src/numpy_gpt/__init__.py:3-183` last. It contains little mathematics; it
 selects which names users can import directly from `numpy_gpt`. Reading it earlier
 would show names without explaining their behavior.
 
-### Step 17 - Run the current learning checkpoint
+### Step 22 - Run the current learning checkpoint
 
 From the project root, run:
 
@@ -556,16 +786,130 @@ From the project root, run:
 python -m unittest discover -s tests -v
 ```
 
-The previous 64-test checkpoint passed with final status `OK`. The new expected
-checkpoint is 70 tests followed by `OK`. If a test fails, read the test first,
-state what behavior it expected, and only then inspect the associated
-implementation.
+The 100-test checkpoint passed with final status `OK`. This verifies the trainer's
+configuration contracts, required terminal fields, metrics/checkpoint files,
+final-step behavior, exact resume, and incompatible-session rejection. It still
+does not prove that a real run learns; that is the next checkpoint.
+
+### Step 23 - Run and interpret the synthetic smoke training
+
+From the project root, run:
+
+```powershell
+python scripts/train_smoke.py --steps 20
+```
+
+This is the first deliberate training execution. It uses the 7,280-parameter
+model in `configs/smoke.json` and generated repetitive text, not the audited book
+or paper folders. Each step should print fields in this shape:
+
+```text
+step=000001 epoch=... train_loss=... validation_loss=... validation_ppl=...
+lr=... grad_norm=... clip=... tok/s=... elapsed=...s
+```
+
+The run is mechanically complete when the terminal prints `complete step=000020`
+and the run directory contains:
+
+```text
+run_manifest.json
+metrics.jsonl
+checkpoint-step-00000010.npz
+checkpoint-step-00000020.npz
+```
+
+Learning evidence requires more than completion. Compare the first and final
+`validation_loss` values. The final value must be finite and lower than the first.
+Training loss may fluctuate because each step samples random windows. Also inspect
+`clip`: a value below `1.0` means the global gradient was clipped; clipping on
+every step is a warning that the learning rate or gradient scale needs review.
+
+Do not call this model conversational after the smoke run. The synthetic corpus
+only tests whether repeated updates learn a tiny byte pattern. Sampling mechanics
+are now implemented later in this guide, but terminal checkpoint generation is
+still blocked on their verification and the model has learned no dialogue data.
+
+Observed result on 2026-10-02:
+
+- The run reached step 20 in 0.14 seconds and wrote both expected checkpoints,
+  `metrics.jsonl`, and `run_manifest.json`.
+- Training loss changed from 5.546263 to 4.147532.
+- Validation loss changed from 5.544793 to 3.974303, a drop of 1.570490 or about
+  28.3 percent.
+- Validation perplexity changed from 255.902 to 53.213, about 4.81 times lower.
+- All 20 raw gradient norms exceeded the configured limit of 1.0, so every update
+  was clipped. The clipping became mild by step 20 (`clip=0.9486`), and the loss
+  remained stable, so this is a diagnostic to monitor rather than evidence of a
+  failed run.
+
+Validation loss repeats on odd-numbered rows because validation runs every two
+steps; the most recent value is carried into the intervening log record. The
+small rise in training loss from step 19 to step 20 is also expected because the
+training windows are sampled randomly. Neither behavior contradicts the clear
+downward trend.
+
+### Step 24 - Understand and verify autoregressive sampling
+
+Read:
+
+- `src/numpy_gpt/sampling.py:20-27` - immutable generation result and stop reason.
+- `src/numpy_gpt/sampling.py:30-49` - temperature and top-k contracts.
+- `src/numpy_gpt/sampling.py:52-90` - greedy and seeded categorical selection.
+- `src/numpy_gpt/sampling.py:93-108` - prompt validation and copying.
+- `src/numpy_gpt/sampling.py:111-162` - full-context autoregressive generation.
+- `tests/test_sampling.py:24-33` - tiny generation configuration.
+- `tests/test_sampling.py:36-163` - tie behavior, seeded reproducibility, top-k
+  exclusion, manual composition, context stopping, and invalid inputs.
+
+Autoregressive generation repeats one operation:
+
+```text
+visible token IDs
+    -> complete model forward pass
+    -> logits at the final visible position
+    -> choose one next token
+    -> append it to the visible token IDs
+    -> repeat
+```
+
+Greedy mode chooses the first token with the largest logit. Stochastic mode
+requires an explicit `numpy.random.Generator`, so identical seeds reproduce the
+same sequence of categorical draws. Temperature rescales candidate logits before
+normalization:
+
+```text
+probability_i proportional to exp((logit_i - max_logit) / temperature)
+```
+
+Lower temperatures concentrate probability on high-logit bytes. Top-k first
+removes every token outside the `k` highest logits; excluded bytes therefore have
+exactly zero probability. These controls change decoding, not trained weights.
+
+The first reference implementation recomputes the entire visible context for
+every generated token. This is inefficient but provides the clearest comparison
+against `language_model_forward`. A key/value cache will be accepted only after
+its token-by-token logits match this reference.
+
+The smoke model has a context length of 16 bytes. Prompt bytes and generated bytes
+share that limit. If a prompt uses 12 bytes and requests 10 new bytes, generation
+produces four and returns `context_limit`; it never discards prompt history
+silently.
+
+Run the expanded checkpoint from the project root:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+The previous 100-test checkpoint passed. The new expected checkpoint is 106 tests
+followed by `OK`. Terminal checkpoint generation remains blocked until this
+sampling checkpoint passes.
 
 ## Track B: corpus and project operations
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 18 - Understand why files are not automatically training data
+### Step 25 - Understand why files are not automatically training data
 
 Read:
 
@@ -578,7 +922,7 @@ Read:
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
 - `docs/corpus-audit.md:49-58` - future preprocessing sequence.
 
-### Step 19 - Read the corpus auditor as an independent utility
+### Step 26 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -593,7 +937,7 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 20 - Read future identity work separately
+### Step 27 - Read future identity work separately
 
 Read:
 
@@ -633,12 +977,20 @@ configuration
     -> complete SwiGLU feed-forward composition
     -> one pre-norm residual transformer block
     -> four-block byte language model with tied embeddings
-    -> deterministic depth-scaled parameter initialization (awaiting verification)
+    -> deterministic depth-scaled parameter initialization
+    -> matching named parameter/gradient traversal
+    -> global-norm clipping and AdamW
+    -> exact versioned checkpoint save/restore
+    -> UTF-8 byte splits and deterministic next-token batches
+    -> one complete train/evaluation step
+    -> observable, resumable multi-step trainer
+    -> synthetic tiny-run loss-reduction proof
+    -> deterministic autoregressive sampling (awaiting verification)
 ```
 
-The next implementation chain will be:
+The next evidence and implementation chain will be:
 
 ```text
-AdamW and gradient clipping
-    -> tiny-batch overfit
+terminal checkpoint generation
+    -> interactive generation
 ```

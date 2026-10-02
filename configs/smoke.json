@@ -1,0 +1,14 @@
+{
+  "vocab_size": 256,
+  "context_length": 16,
+  "d_model": 16,
+  "n_layers": 1,
+  "n_heads": 2,
+  "d_ff": 44,
+  "rope_base": 10000.0,
+  "norm_epsilon": 1e-05,
+  "initializer_std": 0.02,
+  "tie_embeddings": true,
+  "use_bias": false,
+  "seed": 1337
+}

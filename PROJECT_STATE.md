@@ -1,7 +1,7 @@
 # Project state
 
 Last updated: 2026-10-02 (Asia/Calcutta)
-State version: 20
+State version: 29
 
 ## Recovery instruction
 
@@ -14,9 +14,9 @@ action. This file is the continuity source if chat context is unavailable.
 
 - Root: `C:\Users\AKSHAT\Desktop\numpy-gpt-from-scratch`
 - Git branch: `main`
-- Git state: `main` was rebased onto remote commit `429b8df`; the two local
-  commits are now `b89a903` and `6cc19ab`, and the branch is two commits ahead of
-  `origin/main`; this state update is uncommitted
+- Git state: `main` matches `origin/main` at `aecab5a`; the AdamW, global clipping,
+  checkpointing, byte-data, train/evaluation composition, terminal trainer,
+  tests, documentation, and this state update are uncommitted
 - Runtime constraint: model code uses the Python standard library and NumPy
 - Installed NumPy observed during setup: 2.3.5
 - Long-term direction: build the strongest feasible GPT-style system from first
@@ -233,6 +233,118 @@ Observed local GPU environment on 2026-10-02:
     renormalized the Git index to remove Windows `core.autocrlf` ambiguity.
 68. Fetched the rejected push target, preserved remote README-title commit
     `429b8df`, and cleanly rebased the two unpushed local commits onto it.
+69. Received the user's confirmation that the expanded 70-test suite passed,
+    verifying deterministic initialization, parameter shapes/dtypes/scales, seed
+    behavior, and unique named parameter traversal.
+70. Added named gradient traversal matching parameter names, order, and shapes.
+71. Implemented overflow-resistant global L2 gradient measurement, copy-based
+    global-norm clipping, zero-valued Adam state initialization, and an atomic
+    bias-corrected AdamW update with decoupled matrix-only weight decay.
+72. Added six optimizer tests covering full-model name/shape alignment, joint
+    clipping, below-threshold copying, first- and second-step AdamW equations,
+    norm-scale decay exclusion, and validation before mutation.
+73. Updated README, architecture status, research references, and the learning
+    path with optimizer equations, source ranges, test ranges, and the next gate.
+74. Queued `src\numpy_gpt\optimizer.py` in the Codex editor for side-by-side
+    inspection while the user runs the verification suite.
+75. Received the user's confirmation that the expanded 76-test suite passed,
+    verifying named gradient traversal, global clipping, AdamW moments and bias
+    correction, decay exclusions, and validation-before-mutation behavior.
+76. Implemented versioned, non-pickle checkpoint save/load for configuration,
+    every model parameter, AdamW moments and step, and optional NumPy RNG state.
+77. Added strict checkpoint format/name/shape/dtype/finiteness validation and
+    same-directory temporary writing followed by synchronized atomic replacement.
+78. Added six checkpoint tests covering exact round trips, identical post-restore
+    AdamW updates, non-object archives, format and shape tampering, and protection
+    of an existing checkpoint from invalid replacement state.
+79. Updated README, architecture status, and the learning path with checkpoint
+    structure, safety properties, source ranges, test ranges, and the next gate.
+80. Queued `src\numpy_gpt\checkpoint.py` in the Codex editor for side-by-side
+    inspection while the user runs the verification suite.
+81. Received the user's confirmation that the expanded 82-test suite passed,
+    verifying exact checkpoint round trips, identical resumed AdamW updates,
+    safe archive contents, corruption rejection, and overwrite protection.
+82. Clarified that unit tests validate specified mathematics, numerical behavior,
+    causality, contracts, and reproducibility; they do not measure intelligence,
+    conversational quality, knowledge, personality, or useful task performance.
+83. Implemented UTF-8 byte encoding and decoding, contiguous leak-free
+    train/validation splitting, and seeded next-token window sampling.
+84. Added six byte-data tests covering multilingual round trips, invalid generated
+    UTF-8, byte-ID validation, split integrity, exact shifted targets, RNG-state
+    restoration, and invalid split/batch contracts.
+85. Updated README, architecture status, and the learning path with byte-data
+    flow, source ranges, test ranges, limitations, and the next gate.
+86. Queued `src\numpy_gpt\byte_data.py` in the Codex editor for side-by-side
+    inspection while the user runs the verification suite.
+87. Received the user's confirmation that the expanded 88-test suite passed,
+    verifying byte encoding/decoding, split integrity, exact shifted targets,
+    deterministic batching, and RNG-state restoration.
+88. Implemented a complete mean-loss training step that composes full-model
+    forward/backward propagation with named gradients, global clipping, and one
+    atomic AdamW update.
+89. Implemented a separate read-only evaluation path plus flat metrics for loss,
+    perplexity, target-token count, optimizer step, learning rate, gradient norm,
+    and clipping coefficient.
+90. Added six training-composition tests covering direct primitive equivalence,
+    parameter and optimizer-state updates, evaluation immutability, clipping
+    diagnostics, and rejection before mutation, bringing the expected total to
+    94 tests.
+91. Queued `src\numpy_gpt\training.py` in the Codex editor for side-by-side
+    inspection while the user runs the verification suite.
+92. Received the user's confirmation that the expanded 94-test suite passed in
+    3.846 seconds, verifying the complete training-step composition, evaluation
+    immutability, exposed optimizer diagnostics, and invalid-input atomicity.
+93. Implemented validated absolute-step multi-update control with fixed-batch
+    validation, terminal metrics, JSON-lines logs, estimated token epochs, and
+    tokens-per-second timing.
+    An atomic run manifest fingerprints both token splits and records model and
+    training settings so incompatible resume attempts are rejected.
+94. Implemented periodic and final checkpoint events with training RNG state;
+    resumed updates are required to exactly match uninterrupted updates.
+95. Added a 7,280-parameter smoke configuration and terminal script using
+    generated repetitive text by default, without ingesting audited documents.
+96. Added six trainer tests covering configuration contracts, every required
+    terminal field, logs, final checkpoints, exact resume, and invalid sessions,
+    bringing the expected suite total to 100 tests.
+97. Synchronized package exports, README status and commands, architecture status,
+    and the learning guide with the observable/resumable trainer design.
+98. Queued `src\numpy_gpt\trainer.py` in the Codex editor for side-by-side
+    inspection while the user runs the verification suite.
+99. Received the user's confirmation that the expanded 100-test suite passed,
+    verifying trainer configuration, required terminal fields, metrics and
+    checkpoint artifacts, final-step handling, exact resume, and incompatible
+    session rejection.
+100. Synchronized every status-bearing project document and extended the learning
+     path with the exact synthetic smoke command, artifact checklist, loss test,
+     and interpretation of clipping behavior.
+101. Queued `docs\learning-path.md` in the Codex editor for side-by-side review.
+102. Received the user's complete terminal output for the first synthetic smoke
+     run, which reached step 20, logged every step, checkpointed at steps 10 and
+     20, and exited through the expected completion path.
+103. Verified the local run manifest, all 20 JSON-lines metric records, two
+     checkpoint events, and both checkpoint files in
+     `runs\smoke-20261002-140621` without loading or modifying model state.
+104. Recorded validation loss falling from 5.544793 to 3.974303 and validation
+     perplexity from 255.902 to 53.213, proving repeated updates learn the
+     generated repetitive byte pattern.
+105. Chose verified autoregressive sampling as the next milestone instead of
+     extending synthetic training or ingesting audited documents.
+106. Defined the next gate as seeded categorical sampling plus greedy,
+     temperature, top-k, and context-limit behavior, followed by a separate
+     terminal generation command only after sampling tests pass.
+107. Implemented deterministic greedy selection, explicit seeded categorical
+     sampling, positive temperature, deterministic top-k filtering, and stable
+     probability normalization.
+108. Implemented full-context autoregressive token generation with copied prompts,
+     strict byte-ID and shape validation, context-limit stopping, and explicit
+     stop reasons.
+109. Added six sampling tests covering greedy ties, seeded reproducibility, top-k
+     exclusion, equivalence to manual repeated forwards, context stopping without
+     prompt mutation, and invalid contracts, bringing the expected total to 106.
+110. Synchronized public exports, README, architecture status, and the learning
+     path with sampling equations, source ranges, limitations, and the next gate.
+111. Queued `src\numpy_gpt\sampling.py` in the Codex editor for side-by-side
+     inspection while the user runs the verification suite.
 
 ## Corpus state
 
@@ -259,7 +371,7 @@ Audit results:
 ## Verification status
 
 - User-reported `python -m unittest discover -s tests -v` on 2026-10-02:
-  the expanded 64-test suite passed with final status `OK`.
+  the expanded 100-test suite passed with final status `OK`.
 - Cross-entropy backward pass matched centered finite differences with maximum
   absolute error below `1e-9`.
 - `python -m py_compile scripts\inventory_corpus.py src\numpy_gpt\config.py`:
@@ -286,8 +398,30 @@ Audit results:
 - The complete four-block model, tied input/output embedding gradient, causality,
   parameter count, context contracts, and every model-parameter gradient are
   verified.
-- `src\numpy_gpt\initialization.py` and `tests\test_initialization.py` are newly
-  written and unverified. The full suite is expected to contain 70 tests.
+- Deterministic depth-scaled initialization, seed behavior, parameter dtype and
+  shapes, and unique named parameter traversal are verified.
+- Matching named gradients, global-norm clipping, AdamW moments and bias
+  correction, matrix-only decoupled weight decay, and invalid-step atomicity are
+  verified.
+- Versioned non-pickle checkpoints, exact array/config/RNG round trips, identical
+  resumed updates, strict validation, and atomic overwrite protection are
+  verified.
+- UTF-8 byte encoding/decoding, contiguous split integrity, shifted targets,
+  seeded batching, and exact batch reproduction after RNG restoration are
+  verified.
+- Complete forward/loss/backward/clipped-AdamW training-step composition,
+  evaluation immutability, exposed diagnostics, and invalid-input atomicity are
+  verified.
+- Absolute-step training control, required terminal metrics, JSON-lines output,
+  atomic run manifests, periodic/final checkpoints, exact interrupted resume,
+  and incompatible-session rejection are verified by the 100-test suite.
+- User-run synthetic training completed 20 updates with 20 metric events and two
+  checkpoints. Training loss fell from 5.546263 to 4.147532; validation loss fell
+  from 5.544793 to 3.974303; validation perplexity fell from 255.902 to 53.213.
+- The manifest contains the expected 7,280-parameter smoke configuration, 173
+  generated training bytes, 43 generated validation bytes, and split hashes.
+- `src\numpy_gpt\sampling.py` and `tests\test_sampling.py` are newly written and
+  unverified. The full suite is expected to contain 106 tests.
 
 ## Important limitations and risks
 
@@ -299,9 +433,18 @@ Audit results:
 - The local RTX 3050 and driver are inventoried, but the CUDA compiler and native
   host compiler are not available from the current shell; the other laptops,
   cloud GPUs, and network links remain unknown.
-- The complete four-block model is verified. Deterministic parameter
-  initialization is implemented but awaits user verification; no optimizer,
-  tokenizer, trainer, checkpoint system, or inference loop has been implemented.
+- The complete four-block model and deterministic parameter initialization are
+  verified. AdamW and gradient clipping are verified. Checkpoint save/restore is
+  verified. Byte encoding, batching, and one train/evaluation step are verified.
+  The terminal trainer and one synthetic smoke run are verified, but the run only
+  learned one repetitive generated sentence. Sampling is implemented but awaits
+  user verification; terminal inference has not been implemented.
+- Every smoke-run gradient norm exceeded the 1.0 clipping threshold. Clipping was
+  moderate and improved to 0.9486 by the final step while loss decreased, but it
+  remains a metric to monitor when the corpus and model scale increase.
+- Passing unit tests establish implementation contracts, not language ability;
+  training loss, validation loss, generation quality, and downstream evaluations
+  remain necessary evidence.
 - Similarity to frontier assistants is a direction, not a measurable milestone;
   every stage needs explicit baselines and evaluations.
 - A real-person-inspired personality can create privacy, impersonation, emotional
@@ -309,14 +452,13 @@ Audit results:
 
 ## Remaining major milestones
 
-1. Verify deterministic parameter initialization.
-2. Implement AdamW, gradient clipping, checkpointing,
-   byte batching, evaluation, sampling, and terminal-visible training.
-3. Approve and normalize training data, then overfit a tiny corpus before any
+1. Verify deterministic autoregressive sampling, then expose terminal generation
+   from a checkpoint.
+2. Approve and normalize training data, then overfit a tiny corpus before any
    longer run.
-4. Train and evaluate the NumPy model; only then port verified semantics to a GPU
+3. Train and evaluate the NumPy model; only then port verified semantics to a GPU
    backend for larger experiments.
-5. Add instruction tuning, terminal chat, Yuvika/Yuzu identity routing, retrieval,
+4. Add instruction tuning, terminal chat, Yuvika/Yuzu identity routing, retrieval,
    tools, browsing, and voice as later evaluated layers.
 
 ## Terminal-observability requirement
@@ -340,7 +482,24 @@ verified by the expanded 58-test suite.
 The complete four-block byte language model with a final RMSNorm and tied
 input/output embeddings is verified by the expanded 64-test suite.
 Deterministic, depth-scaled parameter initialization and named parameter traversal
-are implemented but await user verification.
+are verified by the expanded 70-test suite.
+Matching named gradient traversal, global-norm clipping, and AdamW are verified by
+the expanded 76-test suite.
+Versioned non-pickle checkpoint save/restore is verified by the expanded 82-test
+suite.
+UTF-8 byte encoding, leak-free splitting, and deterministic next-token batching
+are verified by the expanded 88-test suite.
+One complete mean-loss/backward/clipped-AdamW update and a read-only evaluation
+path are verified by the expanded 94-test suite.
+The terminal-visible multi-step controller, metrics log, checkpoint events, exact
+resume behavior, run-manifest safeguards, and synthetic smoke entry point are
+verified by the expanded 100-test suite.
+The first 20-step synthetic run demonstrated finite, decreasing train and
+validation loss and produced both planned checkpoints. This verifies that the
+small NumPy model can learn a repeated byte pattern, not that it can converse or
+generalize.
+Greedy and seeded stochastic sampling, temperature, top-k filtering, and strict
+context stopping are implemented but await the expanded 106-test checkpoint.
 The user also wants to learn the implementation while building it; new stages
 should extend the learning-path document after source line numbers stabilize.
 
@@ -350,12 +509,12 @@ The user should run the expanded test suite from the project root:
 
 `python -m unittest discover -s tests -v`
 
-Expected success signal: 70 tests run and the final line is `OK`. Do not implement
-AdamW or gradient clipping until the user reports this result. Keep NumPy as the
-canonical implementation and keep `nvcc`/`cl` setup deferred.
+Expected success signal: 106 tests run and the final line is `OK`. Do not add the
+terminal checkpoint-generation command until the user reports this result. Keep
+NumPy canonical and keep `nvcc`/`cl` deferred.
 
-Do not start corpus extraction or model training until these primitives and their
-backward passes pass deterministic numerical checks.
+Do not start audited-corpus extraction or training until rights, privacy,
+deduplication, and extraction-quality decisions are recorded.
 
 ## Update log
 
@@ -638,3 +797,169 @@ backward passes pass deterministic numerical checks.
 - Exact next action: commit this state update, push the now-linear `main` branch,
   then run the expanded suite and report whether all 70 tests finish with final
   status `OK`; AdamW and gradient clipping remain blocked until then.
+
+### 2026-10-02 - State version 21
+
+- Recorded the user's confirmation that all 70 tests passed and marked full-model
+  initialization plus deterministic named parameter traversal verified.
+- Added a deterministic named-gradient traversal that exactly matches optimizer
+  parameter names, order, and shapes.
+- Implemented an overflow-resistant global gradient norm and copy-based clipping
+  so backward-pass gradients remain available for inspection.
+- Implemented functional AdamW state, bias-corrected first/second moments,
+  decoupled weight decay for matrices, norm-scale decay exclusion, finite-value
+  checks, exact name/shape contracts, and atomic parameter mutation.
+- Added six tests, bringing the expected suite total to 76, and synchronized the
+  README, architecture record, primary research list, and learning guide.
+- Queued the optimizer implementation in the Codex editor for user inspection.
+- Did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 76
+  tests finish with final status `OK`; checkpoint persistence remains blocked
+  until then.
+
+### 2026-10-02 - State version 22
+
+- Recorded the user's confirmation that all 76 tests passed and marked named
+  gradients, global-norm clipping, and AdamW verified.
+- Implemented a versioned NumPy checkpoint containing the complete configuration,
+  model parameters, both Adam moments, optimizer step, and optional RNG state.
+- Required `allow_pickle=False`, raw-byte JSON metadata, exact archive fields,
+  strict names/shapes/dtypes/finiteness, and supported-format validation on load.
+- Implemented validate-before-write behavior plus a synchronized temporary file
+  and atomic same-directory replacement for safe checkpoint updates.
+- Added six tests, bringing the expected suite total to 82; the main resume test
+  requires an original and restored state to produce the identical next AdamW
+  parameters, moments, and step statistics.
+- Synchronized README, architecture status, and the learning guide.
+- Queued the checkpoint implementation in the Codex editor for user inspection.
+- Did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 82
+  tests finish with final status `OK`; byte batching remains blocked until then.
+
+### 2026-10-02 - State version 23
+
+- Recorded the user's confirmation that all 82 tests passed and marked versioned,
+  non-pickle checkpoint save/restore plus exact resume behavior verified.
+- Clarified that these unit tests detect mathematical, numerical, causal,
+  contract, and reproducibility bugs; they do not demonstrate intelligence or
+  conversational quality.
+- Implemented writable UTF-8 byte encoding, replacement-safe generated-byte
+  decoding, strict byte-ID contracts, and fixed vocabulary values `0..255`.
+- Implemented contiguous non-overlapping train/validation splits that each retain
+  at least one complete context-plus-target window.
+- Implemented seeded random next-token batches with explicit sampled starts and
+  targets equal to inputs shifted by exactly one byte.
+- Added six tests, bringing the expected suite total to 88, including proof that
+  restoring the generator state reproduces the exact next batch.
+- Synchronized README, architecture status, and the learning guide.
+- Queued the byte-data implementation in the Codex editor for user inspection.
+- Did not ingest source documents and did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 88
+  tests finish with final status `OK`; full train/evaluation composition remains
+  blocked until then.
+
+### 2026-10-02 - State version 24
+
+- Recorded the user's confirmation that all 88 tests passed and marked UTF-8 byte
+  encoding/decoding, contiguous splits, deterministic shifted-target batching,
+  and exact RNG restoration verified.
+- Implemented a read-only batch evaluation path reporting mean loss, perplexity,
+  and target-token count without backward propagation or parameter mutation.
+- Implemented one complete training step: full-model forward, mean cross-entropy,
+  full backward, deterministic named gradients, global clipping, and AdamW.
+- Exposed flat per-step diagnostics needed by the future terminal trainer.
+- Added six tests, bringing the expected suite total to 94, and synchronized the
+  README, architecture record, learning guide, package exports, and this state.
+- Queued the training-step implementation in the Codex editor for inspection.
+- Did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 94
+  tests finish with final status `OK`; the terminal-visible trainer remains
+  blocked until then.
+
+### 2026-10-02 - State version 25
+
+- Recorded the user's confirmation that all 94 tests passed in 3.846 seconds and
+  marked the train/evaluation composition verified.
+- Implemented a reusable absolute-step trainer with fixed-batch validation,
+  terminal metrics, JSON-lines logs, estimated epochs, throughput, and elapsed
+  time.
+- Added an atomic run manifest with model/training settings and SHA-256 token
+  fingerprints, preventing accidental resume on different data or hyperparameters.
+- Added periodic/final atomic checkpoints containing the advancing training RNG;
+  an integration test requires resumed and uninterrupted parameters to match.
+- Added a small CPU smoke configuration and CLI that defaults to generated text,
+  so no audited book or paper is silently used.
+- Added six tests, bringing the expected suite total to 100, and synchronized
+  package exports, README, architecture status, learning guide, and this state.
+- Queued the multi-step trainer in the Codex editor for inspection.
+- Did not execute project tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 100
+  tests finish with final status `OK`; synthetic smoke training remains blocked
+  until then.
+
+### 2026-10-02 - State version 26
+
+- Recorded the user's confirmation that all 100 tests passed and marked the
+  observable, logged, checkpointed, exactly resumable trainer mechanically
+  verified.
+- Reviewed all Markdown files for stale implementation status. Updated README,
+  architecture, learning path, and this state; data policy, corpus audit,
+  identity, and repository instructions required no factual changes.
+- Added a learning checkpoint for the first actual synthetic training run,
+  including the exact command, expected terminal/artifact signals, and the rule
+  that final validation loss must be finite and below the first value.
+- Queued the updated learning guide in the Codex editor for inspection.
+- Made no model, trainer, configuration, or test-code changes and did not execute
+  tests or training.
+- Exact next action: the user runs `python scripts\train_smoke.py --steps 20` and
+  reports the first/final metric, checkpoint, and completion lines; sampling
+  remains blocked until loss reduction is demonstrated.
+
+### 2026-10-02 - State version 27
+
+- Recorded and independently inspected the first user-run synthetic training
+  artifacts: one manifest, 20 metrics, checkpoint events at steps 10 and 20, and
+  two nonempty checkpoint archives.
+- Confirmed validation loss fell by 1.570490 (about 28.3 percent) and validation
+  perplexity fell by a factor of about 4.81; training loss also decreased overall.
+- Recorded that all 20 updates were gradient-clipped, with finite raw norms and a
+  final coefficient of 0.9486. Loss behavior was stable, so no optimizer setting
+  was changed from this short run alone.
+- Updated README, architecture, learning guide, and this state to mark the smoke
+  loss-reduction gate passed while preserving the distinction between pattern
+  memorization and language ability.
+- Made no source, configuration, or test changes and did not execute tests or
+  training. Run artifacts remain local under the ignored `runs` directory.
+- Exact next action: on the user's instruction, implement and test deterministic
+  autoregressive sampling before exposing checkpoint generation in the terminal.
+
+### 2026-10-02 - State version 28
+
+- Answered the next-step decision without changing model code: implement
+  autoregressive sampling before training longer or admitting real documents.
+- Specified greedy decoding, seeded stochastic draws, temperature, top-k
+  filtering, strict prompt/generation context limits, and invalid-input tests as
+  the next correctness gate.
+- Chose full-context recomputation for the first transparent reference generator;
+  key/value caching remains a later performance optimization.
+- Kept terminal checkpoint generation separate and blocked until the sampling
+  module passes its deterministic tests.
+- Did not execute tests or training and made no source-code changes.
+- Exact next action: when the user says to proceed, implement the sampling module,
+  add its tests, update the learning guide, and provide the expanded test command.
+
+### 2026-10-02 - State version 29
+
+- Implemented one-token greedy and seeded stochastic selection with validated
+  temperature, deterministic top-k candidates, and stable normalization.
+- Implemented transparent autoregressive generation by recomputing the complete
+  visible context at every token, preserving the verified model as the oracle.
+- Added context-limit stopping, prompt-copy guarantees, explicit stop reasons,
+  and strict logits/prompt/sampling contracts.
+- Added six tests, bringing the expected suite total to 106, and synchronized
+  exports, README, architecture status, learning guide, and this state.
+- Queued the sampling implementation in the Codex editor for inspection.
+- Did not execute project tests, generation, or training.
+- Exact next action: the user runs the expanded suite and reports whether all 106
+  tests finish with final status `OK`; terminal checkpoint generation remains
+  blocked until then.

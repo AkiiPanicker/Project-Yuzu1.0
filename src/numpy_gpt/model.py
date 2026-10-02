@@ -268,3 +268,23 @@ def named_parameters(
         yield f"{prefix}.feed_forward_value_weight", block.feed_forward_value_weight
         yield f"{prefix}.feed_forward_output_weight", block.feed_forward_output_weight
     yield "final_norm_scale", parameters.final_norm_scale
+
+
+def named_gradients(
+    gradients: LanguageModelWeightGradients,
+) -> Iterator[tuple[str, FloatArray]]:
+    """Yield gradients in exactly the same deterministic order as parameters."""
+
+    yield "token_embedding", gradients.token_embedding
+    for index, block in enumerate(gradients.blocks):
+        prefix = f"blocks.{index}"
+        yield f"{prefix}.attention_norm_scale", block.attention_norm
+        yield f"{prefix}.query_weight", block.attention.query
+        yield f"{prefix}.key_weight", block.attention.key
+        yield f"{prefix}.attention_value_weight", block.attention.value
+        yield f"{prefix}.attention_output_weight", block.attention.output
+        yield f"{prefix}.feed_forward_norm_scale", block.feed_forward_norm
+        yield f"{prefix}.gate_weight", block.feed_forward.gate
+        yield f"{prefix}.feed_forward_value_weight", block.feed_forward.value
+        yield f"{prefix}.feed_forward_output_weight", block.feed_forward.output
+    yield "final_norm_scale", gradients.final_norm_scale

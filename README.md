@@ -51,14 +51,29 @@ tests/                 Standard-library unittest suite
 Phase 1 is active. Numerical primitives and one complete pre-normalized residual
 transformer block are verified by 58 deterministic and finite-difference tests.
 The four-block language model with tied input/output embeddings is verified by the
-64-test checkpoint. Deterministic depth-scaled parameter initialization is
-implemented and awaiting the 70-test checkpoint. No training data has been
-ingested and no model training has started.
+64-test checkpoint. Deterministic depth-scaled parameter initialization and named
+parameter traversal are verified by the 70-test checkpoint. Global-norm clipping
+and AdamW are verified by the 76-test checkpoint. Versioned, non-pickle checkpoint
+save/restore is verified by the 82-test checkpoint. UTF-8 byte encoding, leak-free
+splitting, and deterministic next-token batches are verified by the 88-test
+checkpoint. One complete mean-loss, backward, clipped-AdamW training step and a
+read-only evaluation path are verified by the 94-test checkpoint. A resumable,
+terminal-visible training controller, JSON-lines metrics, checkpoint events, and
+a small synthetic smoke-training command are verified by the 100-test checkpoint.
+The first 20-step synthetic smoke run reduced validation loss from 5.544793 to
+3.974303 and validation perplexity from 255.902 to 53.213, while writing both
+planned checkpoints. This proves the small model can learn a repetitive byte
+pattern; it does not demonstrate language ability. No book or paper data has been
+ingested. Greedy and seeded stochastic autoregressive sampling with temperature,
+top-k filtering, and context-limit stopping are implemented and awaiting the
+106-test checkpoint. Terminal checkpoint generation remains the next interface
+gate.
 
 ## Commands
 
 ```powershell
 python -m unittest discover -s tests -v
+python scripts/train_smoke.py --steps 20
 python scripts/inventory_corpus.py
 ```
 
@@ -69,7 +84,7 @@ python scripts/inventory_corpus.py
 3. Byte tokenizer, batching, deterministic random seeds, and bigram baseline.
 4. Linear, RMSNorm, RoPE, causal attention, and SwiGLU modules.
 5. Full forward/backward transformer and deliberate tiny-set overfitting.
-6. Checkpointing, AdamW, evaluation, and sampling.
+6. Checkpointing, deterministic training, evaluation, and sampling.
 7. Train the 3.28M model in NumPy.
 8. Port the verified architecture to a GPU backend without changing semantics.
 9. Add instruction tuning, summarization, retrieval, voice, and tools as separate
