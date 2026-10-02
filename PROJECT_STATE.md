@@ -1,7 +1,7 @@
 # Project state
 
 Last updated: 2026-10-02 (Asia/Calcutta)
-State version: 19
+State version: 20
 
 ## Recovery instruction
 
@@ -14,9 +14,9 @@ action. This file is the continuity source if chat context is unavailable.
 
 - Root: `C:\Users\AKSHAT\Desktop\numpy-gpt-from-scratch`
 - Git branch: `main`
-- Git state: transformer block, full model, initialization, and their tests are
-  committed at `ea80058`; current state/documentation synchronization is
-  uncommitted
+- Git state: `main` was rebased onto remote commit `429b8df`; the two local
+  commits are now `b89a903` and `6cc19ab`, and the branch is two commits ahead of
+  `origin/main`; this state update is uncommitted
 - Runtime constraint: model code uses the Python standard library and NumPy
 - Installed NumPy observed during setup: 2.3.5
 - Long-term direction: build the strongest feasible GPT-style system from first
@@ -231,6 +231,8 @@ Observed local GPU environment on 2026-10-02:
 67. Added a repository-level `.gitattributes` policy that keeps text files at LF
     on every platform, excludes binary project assets from text conversion, and
     renormalized the Git index to remove Windows `core.autocrlf` ambiguity.
+68. Fetched the rejected push target, preserved remote README-title commit
+    `429b8df`, and cleanly rebased the two unpushed local commits onto it.
 
 ## Corpus state
 
@@ -622,3 +624,17 @@ backward passes pass deterministic numerical checks.
 - Exact next action remains: the user runs the expanded suite and reports whether
   all 70 tests finish with final status `OK`; AdamW and gradient clipping remain
   blocked until then.
+
+### 2026-10-02 - State version 20
+
+- Investigated the non-fast-forward push rejection instead of pulling blindly.
+- Fetched `origin/main` and found one remote-only commit, `429b8df`, which changes
+  only the README title from "NumPy GPT from scratch" to "GPT from scratch."
+- Confirmed the branch was two commits ahead and one commit behind, with a common
+  ancestor at `b8ded9e`; the histories were related rather than independent.
+- Rebased both local commits cleanly onto `origin/main` with no conflict. Their
+  rewritten IDs are `b89a903` and `6cc19ab`, and the remote title is preserved.
+- Made no model-code changes and did not execute project tests or training.
+- Exact next action: commit this state update, push the now-linear `main` branch,
+  then run the expanded suite and report whether all 70 tests finish with final
+  status `OK`; AdamW and gradient clipping remain blocked until then.
