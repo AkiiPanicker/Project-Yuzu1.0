@@ -1,7 +1,7 @@
 # Project state
 
 Last updated: 2026-10-02 (Asia/Calcutta)
-State version: 17
+State version: 19
 
 ## Recovery instruction
 
@@ -14,8 +14,9 @@ action. This file is the continuity source if chat context is unavailable.
 
 - Root: `C:\Users\AKSHAT\Desktop\numpy-gpt-from-scratch`
 - Git branch: `main`
-- Git state: verified 52-test core milestone committed at `b8ded9e`; current
-  transformer-block and documentation changes are uncommitted
+- Git state: transformer block, full model, initialization, and their tests are
+  committed at `ea80058`; current state/documentation synchronization is
+  uncommitted
 - Runtime constraint: model code uses the Python standard library and NumPy
 - Installed NumPy observed during setup: 2.3.5
 - Long-term direction: build the strongest feasible GPT-style system from first
@@ -208,6 +209,28 @@ Observed local GPU environment on 2026-10-02:
     all parameter gradients, context offsets, and invalid model contracts.
 58. Updated package exports, README, architecture status, and the learning path
     with full-model flow, equations, source ranges, and test ranges.
+59. Received the user's confirmation that the expanded 64-test suite passed,
+    verifying the four-block model, tied embedding gradient, causality, parameter
+    count, configuration contracts, and all model-parameter gradients.
+60. Added `initializer_std` to the validated configuration and versioned JSON.
+61. Implemented reproducible full-model parameter initialization in float32 by
+    default, with dtype and seed overrides.
+62. Initialized RMSNorm scales to one, ordinary weights at the configured base
+    Gaussian scale, and residual-output projections at
+    `initializer_std / sqrt(2 * n_layers)`.
+63. Added deterministic unique parameter naming for future optimizer and
+    checkpoint traversal.
+64. Added six initialization tests covering reproducibility, seed separation,
+    exact names/shapes/count, dtype and finiteness, empirical initialization
+    scales, and invalid settings.
+65. Updated README, architecture status, and learning documentation with the
+    initialization rationale, equations, source ranges, and test ranges.
+66. Observed commit `ea80058`, which now contains the transformer block, complete
+    model, initialization implementation, and their tests; only the latest
+    state/documentation synchronization remains uncommitted.
+67. Added a repository-level `.gitattributes` policy that keeps text files at LF
+    on every platform, excludes binary project assets from text conversion, and
+    renormalized the Git index to remove Windows `core.autocrlf` ambiguity.
 
 ## Corpus state
 
@@ -234,7 +257,7 @@ Audit results:
 ## Verification status
 
 - User-reported `python -m unittest discover -s tests -v` on 2026-10-02:
-  the expanded 58-test suite passed with final status `OK`.
+  the expanded 64-test suite passed with final status `OK`.
 - Cross-entropy backward pass matched centered finite differences with maximum
   absolute error below `1e-9`.
 - `python -m py_compile scripts\inventory_corpus.py src\numpy_gpt\config.py`:
@@ -258,8 +281,11 @@ Audit results:
 - The complete pre-normalized residual transformer block, both residual-gradient
   paths, future isolation, norm-scale gradients, and all seven projection-weight
   gradients are verified.
-- `src\numpy_gpt\model.py` and `tests\test_model.py` are newly written and
-  unverified. The full suite is expected to contain 64 tests.
+- The complete four-block model, tied input/output embedding gradient, causality,
+  parameter count, context contracts, and every model-parameter gradient are
+  verified.
+- `src\numpy_gpt\initialization.py` and `tests\test_initialization.py` are newly
+  written and unverified. The full suite is expected to contain 70 tests.
 
 ## Important limitations and risks
 
@@ -271,10 +297,9 @@ Audit results:
 - The local RTX 3050 and driver are inventoried, but the CUDA compiler and native
   host compiler are not available from the current shell; the other laptops,
   cloud GPUs, and network links remain unknown.
-- All components through one residual transformer block are verified. The full
-  four-block model is implemented but awaits user verification; no parameter
-  initializer, optimizer, tokenizer, trainer, or inference loop has been
-  implemented.
+- The complete four-block model is verified. Deterministic parameter
+  initialization is implemented but awaits user verification; no optimizer,
+  tokenizer, trainer, checkpoint system, or inference loop has been implemented.
 - Similarity to frontier assistants is a direction, not a measurable milestone;
   every stage needs explicit baselines and evaluations.
 - A real-person-inspired personality can create privacy, impersonation, emotional
@@ -282,8 +307,8 @@ Audit results:
 
 ## Remaining major milestones
 
-1. Verify the full four-block language model.
-2. Implement parameter initialization, AdamW, gradient clipping, checkpointing,
+1. Verify deterministic parameter initialization.
+2. Implement AdamW, gradient clipping, checkpointing,
    byte batching, evaluation, sampling, and terminal-visible training.
 3. Approve and normalize training data, then overfit a tiny corpus before any
    longer run.
@@ -311,7 +336,9 @@ SwiGLU feed-forward module are verified.
 One pre-normalized residual transformer block and its explicit backward pass are
 verified by the expanded 58-test suite.
 The complete four-block byte language model with a final RMSNorm and tied
-input/output embeddings is implemented but awaits user verification.
+input/output embeddings is verified by the expanded 64-test suite.
+Deterministic, depth-scaled parameter initialization and named parameter traversal
+are implemented but await user verification.
 The user also wants to learn the implementation while building it; new stages
 should extend the learning-path document after source line numbers stabilize.
 
@@ -321,9 +348,9 @@ The user should run the expanded test suite from the project root:
 
 `python -m unittest discover -s tests -v`
 
-Expected success signal: 64 tests run and the final line is `OK`. Do not implement
-parameter initialization or an optimizer until the user reports this result.
-Keep NumPy as the canonical implementation and keep `nvcc`/`cl` setup deferred.
+Expected success signal: 70 tests run and the final line is `OK`. Do not implement
+AdamW or gradient clipping until the user reports this result. Keep NumPy as the
+canonical implementation and keep `nvcc`/`cl` setup deferred.
 
 Do not start corpus extraction or model training until these primitives and their
 backward passes pass deterministic numerical checks.
@@ -560,4 +587,38 @@ backward passes pass deterministic numerical checks.
 - Kept `nvcc` and `cl` setup deferred and did not execute tests or training.
 - Exact next action: the user runs the expanded suite and reports whether all 64
   tests finish with final status `OK`; initialization and optimization remain
+  blocked until then.
+
+### 2026-10-02 - State version 18
+
+- Recorded the user's confirmation that all 64 tests passed and marked the full
+  four-block language-model composition and gradients verified.
+- Added a validated `initializer_std` configuration field and implemented
+  deterministic full-model allocation from one seeded NumPy generator.
+- Initialized norm scales to one, ordinary weights at the base Gaussian scale,
+  and residual-output projections at the depth-scaled GPT-style standard
+  deviation `initializer_std / sqrt(2 * n_layers)`.
+- Added deterministic unique parameter names for future optimizer and checkpoint
+  traversal.
+- Added six tests, bringing the expected suite total to 70, and synchronized all
+  status and learning documentation.
+- Recorded that commit `ea80058` contains the source and test milestones through
+  initialization; the latest state/documentation synchronization is uncommitted.
+- Kept `nvcc` and `cl` setup deferred and did not execute tests or training.
+- Exact next action: the user runs the expanded suite and reports whether all 70
+  tests finish with final status `OK`; AdamW and gradient clipping remain blocked
+  until then.
+
+### 2026-10-02 - State version 19
+
+- Diagnosed the `LF will be replaced by CRLF` messages as Git line-ending policy
+  warnings caused by global `core.autocrlf=true` and the absence of a repository
+  `.gitattributes` file; no project data was lost.
+- Added `.gitattributes` to enforce LF for repository text while marking common
+  binary project formats as binary.
+- Renormalized the Git index so the already staged documentation follows the
+  explicit repository policy and future `git add` operations remain consistent.
+- Made no model-code changes and did not execute project tests or training.
+- Exact next action remains: the user runs the expanded suite and reports whether
+  all 70 tests finish with final status `OK`; AdamW and gradient clipping remain
   blocked until then.

@@ -1,0 +1,12 @@
+# Keep repository text files normalized to LF on every platform.
+* text=auto eol=lf
+
+# Do not apply text conversion to binary project assets.
+*.gif binary
+*.jpeg binary
+*.jpg binary
+*.npy binary
+*.npz binary
+*.pdf binary
+*.png binary
+*.webp binary

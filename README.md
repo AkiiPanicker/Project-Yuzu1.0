@@ -50,9 +50,10 @@ tests/                 Standard-library unittest suite
 
 Phase 1 is active. Numerical primitives and one complete pre-normalized residual
 transformer block are verified by 58 deterministic and finite-difference tests.
-The four-block language model with tied input/output embeddings is implemented
-and awaiting the 64-test checkpoint. No training data has been ingested and no
-model training has started.
+The four-block language model with tied input/output embeddings is verified by the
+64-test checkpoint. Deterministic depth-scaled parameter initialization is
+implemented and awaiting the 70-test checkpoint. No training data has been
+ingested and no model training has started.
 
 ## Commands
 

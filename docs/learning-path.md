@@ -1,6 +1,6 @@
 # Learning path: rebuild the project in your head
 
-This guide is pinned to the source layout as of project state version 17. Source
+This guide is pinned to the source layout as of project state version 18. Source
 line numbers will move as the implementation grows, so update this file whenever
 the referenced code changes substantially.
 
@@ -42,12 +42,12 @@ You should be able to answer:
 
 Read:
 
-- `configs/tiny.json:1-13` - the experiment values a user can change.
-- `src/numpy_gpt/config.py:11-25` - the same values represented in Python.
-- `src/numpy_gpt/config.py:27-46` - invalid configurations rejected early.
-- `src/numpy_gpt/config.py:48-50` - head width calculation.
-- `src/numpy_gpt/config.py:52-75` - exact parameter-count decomposition.
-- `src/numpy_gpt/config.py:77-86` - conversion to dictionaries and loading JSON.
+- `configs/tiny.json:1-14` - the experiment values a user can change.
+- `src/numpy_gpt/config.py:12-27` - the same values represented in Python.
+- `src/numpy_gpt/config.py:29-56` - invalid configurations rejected early.
+- `src/numpy_gpt/config.py:58-60` - head width calculation.
+- `src/numpy_gpt/config.py:62-85` - exact parameter-count decomposition.
+- `src/numpy_gpt/config.py:87-96` - conversion to dictionaries and loading JSON.
 - `tests/test_config.py:16-28` - the contract expressed as tests.
 
 Write these shapes on paper:
@@ -506,13 +506,49 @@ The blocks run in order during forward and in reverse order during backward. The
 finite-difference test checks the shared embedding, final norm, and all nine
 arrays inside each of the four blocks.
 
-### Step 15 - Understand the public package surface
+### Step 15 - Initialize every parameter reproducibly
 
-Read `src/numpy_gpt/__init__.py:3-114` last. It contains little mathematics; it
+Read:
+
+- `src/numpy_gpt/config.py:16-27` - the configured base initialization scale and
+  random seed.
+- `src/numpy_gpt/initialization.py:16-26` - the shared Gaussian-array helper.
+- `src/numpy_gpt/initialization.py:29-118` - dtype/seed validation, one random
+  stream, all parameter allocations, and residual-output scaling.
+- `src/numpy_gpt/model.py:253-270` - unique parameter names in deterministic
+  optimizer/checkpoint order.
+- `tests/test_initialization.py:37-139` - reproducibility, seed changes, exact
+  count, dtypes, finite values, distribution scales, and invalid settings.
+
+The base initialization is:
+
+```text
+ordinary weights ~ Normal(0, initializer_std^2)
+norm scales = 1
+```
+
+Each transformer block writes twice to the residual stream: once after attention
+and once after its feed-forward network. Their output matrices therefore use:
+
+```text
+residual_std = initializer_std / sqrt(2 * n_layers)
+```
+
+For four layers and `initializer_std = 0.02`, this is approximately `0.007071`.
+The smaller residual-writing scale limits variance accumulation at the beginning
+of training without changing the verified forward or backward equations.
+
+One seeded `numpy.random.Generator` produces every random array in a fixed order.
+The named traversal exposes each unique parameter exactly once; the tied embedding
+appears once even though forward uses it for both lookup and output projection.
+
+### Step 16 - Understand the public package surface
+
+Read `src/numpy_gpt/__init__.py:3-118` last. It contains little mathematics; it
 selects which names users can import directly from `numpy_gpt`. Reading it earlier
 would show names without explaining their behavior.
 
-### Step 16 - Run the current learning checkpoint
+### Step 17 - Run the current learning checkpoint
 
 From the project root, run:
 
@@ -520,8 +556,8 @@ From the project root, run:
 python -m unittest discover -s tests -v
 ```
 
-The previous 58-test checkpoint passed with final status `OK`. The new expected
-checkpoint is 64 tests followed by `OK`. If a test fails, read the test first,
+The previous 64-test checkpoint passed with final status `OK`. The new expected
+checkpoint is 70 tests followed by `OK`. If a test fails, read the test first,
 state what behavior it expected, and only then inspect the associated
 implementation.
 
@@ -529,7 +565,7 @@ implementation.
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 17 - Understand why files are not automatically training data
+### Step 18 - Understand why files are not automatically training data
 
 Read:
 
@@ -542,7 +578,7 @@ Read:
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
 - `docs/corpus-audit.md:49-58` - future preprocessing sequence.
 
-### Step 18 - Read the corpus auditor as an independent utility
+### Step 19 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -557,7 +593,7 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 19 - Read future identity work separately
+### Step 20 - Read future identity work separately
 
 Read:
 
@@ -596,13 +632,13 @@ configuration
     -> full multi-head attention composition
     -> complete SwiGLU feed-forward composition
     -> one pre-norm residual transformer block
-    -> four-block byte language model with tied embeddings (awaiting verification)
+    -> four-block byte language model with tied embeddings
+    -> deterministic depth-scaled parameter initialization (awaiting verification)
 ```
 
 The next implementation chain will be:
 
 ```text
-deterministic parameter initialization
-    -> AdamW and gradient clipping
+AdamW and gradient clipping
     -> tiny-batch overfit
 ```

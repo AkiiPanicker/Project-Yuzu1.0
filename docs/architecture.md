@@ -82,6 +82,7 @@ The model is not enlarged until all conditions at the current scale pass:
 ## Primary research references
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Language Models are Unsupervised Multitask Learners](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
 - [Root Mean Square Layer Normalization](https://arxiv.org/abs/1910.07467)
 - [GLU Variants Improve Transformer](https://arxiv.org/abs/2002.05202)
 - [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
@@ -113,14 +114,19 @@ Verified with deterministic and finite-difference tests:
 - One complete pre-normalized residual transformer block.
 - Explicit backward composition through both residual branches, both RMSNorms,
   multi-head attention, and the SwiGLU feed-forward network.
-
-Implemented and awaiting user verification:
-
 - Complete four-block byte language-model composition.
 - Token embedding, four residual blocks, final RMSNorm, tied output projection,
   and reverse-order backward through the entire stack.
 - Addition of the embedding-table gradients from input lookup and tied output use.
 
+Implemented and awaiting user verification:
+
+- Deterministic full-model parameter initialization from one configured seed.
+- Unit-valued RMSNorm scales, base Gaussian projection scale, and depth-scaled
+  attention/FFN residual-output projections.
+- A unique, deterministic named-parameter traversal for optimizers and
+  checkpoints.
+
 Not yet implemented:
 
-- Parameter initialization, optimizer, training loop, and generation.
+- Optimizer, gradient clipping, checkpointing, training loop, and generation.
