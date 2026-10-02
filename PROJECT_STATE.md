@@ -1,7 +1,7 @@
 # Project state
 
 Last updated: 2026-10-02 (Asia/Calcutta)
-State version: 29
+State version: 30
 
 ## Recovery instruction
 
@@ -14,9 +14,9 @@ action. This file is the continuity source if chat context is unavailable.
 
 - Root: `C:\Users\AKSHAT\Desktop\numpy-gpt-from-scratch`
 - Git branch: `main`
-- Git state: `main` matches `origin/main` at `aecab5a`; the AdamW, global clipping,
-  checkpointing, byte-data, train/evaluation composition, terminal trainer,
-  tests, documentation, and this state update are uncommitted
+- Git state: `main` matches `origin/main` at `751c9e8`; the one-shot checkpoint
+  inference source, CLI, tests, documentation, and this state update are
+  uncommitted
 - Runtime constraint: model code uses the Python standard library and NumPy
 - Installed NumPy observed during setup: 2.3.5
 - Long-term direction: build the strongest feasible GPT-style system from first
@@ -345,6 +345,20 @@ Observed local GPU environment on 2026-10-02:
      path with sampling equations, source ranges, limitations, and the next gate.
 111. Queued `src\numpy_gpt\sampling.py` in the Codex editor for side-by-side
      inspection while the user runs the verification suite.
+112. Received the user's confirmation that the expanded 106-test suite passed,
+     verifying greedy tie behavior, seeded stochastic repetition, top-k
+     exclusion, full-forward equivalence, context stopping, and prompt copying.
+113. Implemented checkpoint-backed one-shot generation with UTF-8 prompt encoding,
+     replacement-safe output decoding, generation-only timing, throughput, and
+     explicit checkpoint/context/stop metadata.
+114. Implemented terminal-safe result formatting that escapes arbitrary generated
+     control bytes instead of printing them directly.
+115. Added a one-shot command using the existing smoke checkpoint and six inference
+     tests covering direct sampler equivalence, stochastic repetition, context
+     exhaustion including zero generated tokens, UTF-8 byte counts, terminal
+     escaping, timing, and invalid contracts. The expected suite total is 112.
+116. Synchronized public exports, README, architecture status, learning order,
+     exact source ranges, and this recovery state for the inference gate.
 
 ## Corpus state
 
@@ -371,7 +385,7 @@ Audit results:
 ## Verification status
 
 - User-reported `python -m unittest discover -s tests -v` on 2026-10-02:
-  the expanded 100-test suite passed with final status `OK`.
+  the expanded 106-test suite passed with final status `OK`.
 - Cross-entropy backward pass matched centered finite differences with maximum
   absolute error below `1e-9`.
 - `python -m py_compile scripts\inventory_corpus.py src\numpy_gpt\config.py`:
@@ -420,8 +434,12 @@ Audit results:
   from 5.544793 to 3.974303; validation perplexity fell from 255.902 to 53.213.
 - The manifest contains the expected 7,280-parameter smoke configuration, 173
   generated training bytes, 43 generated validation bytes, and split hashes.
-- `src\numpy_gpt\sampling.py` and `tests\test_sampling.py` are newly written and
-  unverified. The full suite is expected to contain 106 tests.
+- Greedy/stochastic selection, temperature, deterministic top-k filtering,
+  repeated full-context generation, copied prompts, and context-limit stopping
+  are verified by the 106-test suite.
+- `src\numpy_gpt\inference.py`, `scripts\generate_checkpoint.py`, and
+  `tests\test_inference.py` are newly written and unverified. Static discovery
+  finds 112 test methods in the expanded suite.
 
 ## Important limitations and risks
 
@@ -436,9 +454,10 @@ Audit results:
 - The complete four-block model and deterministic parameter initialization are
   verified. AdamW and gradient clipping are verified. Checkpoint save/restore is
   verified. Byte encoding, batching, and one train/evaluation step are verified.
-  The terminal trainer and one synthetic smoke run are verified, but the run only
-  learned one repetitive generated sentence. Sampling is implemented but awaits
-  user verification; terminal inference has not been implemented.
+  The terminal trainer, one synthetic smoke run, and sampling mechanics are
+  verified, but the run only learned one repetitive generated sentence. One-shot
+  terminal inference is implemented but awaits user verification; no interactive
+  conversation loop exists.
 - Every smoke-run gradient norm exceeded the 1.0 clipping threshold. Clipping was
   moderate and improved to 0.9486 by the final step while loss decreased, but it
   remains a metric to monitor when the corpus and model scale increase.
@@ -452,8 +471,8 @@ Audit results:
 
 ## Remaining major milestones
 
-1. Verify deterministic autoregressive sampling, then expose terminal generation
-   from a checkpoint.
+1. Verify one-shot checkpoint generation, then inspect actual smoke-checkpoint
+   output before adding an interactive loop.
 2. Approve and normalize training data, then overfit a tiny corpus before any
    longer run.
 3. Train and evaluate the NumPy model; only then port verified semantics to a GPU
@@ -499,7 +518,10 @@ validation loss and produced both planned checkpoints. This verifies that the
 small NumPy model can learn a repeated byte pattern, not that it can converse or
 generalize.
 Greedy and seeded stochastic sampling, temperature, top-k filtering, and strict
-context stopping are implemented but await the expanded 106-test checkpoint.
+context stopping are verified by the expanded 106-test checkpoint.
+Checkpoint-backed one-shot generation, UTF-8 byte handling, terminal-safe
+rendering, and throughput reporting are implemented but await the expanded
+112-test checkpoint.
 The user also wants to learn the implementation while building it; new stages
 should extend the learning-path document after source line numbers stabilize.
 
@@ -509,9 +531,10 @@ The user should run the expanded test suite from the project root:
 
 `python -m unittest discover -s tests -v`
 
-Expected success signal: 106 tests run and the final line is `OK`. Do not add the
-terminal checkpoint-generation command until the user reports this result. Keep
-NumPy canonical and keep `nvcc`/`cl` deferred.
+Expected success signal: 112 tests run and the final line is `OK`. After the user
+reports this result, run the one-shot command against the saved step-20 smoke
+checkpoint and interpret the raw byte continuation before building an interactive
+loop. Keep NumPy canonical and keep `nvcc`/`cl` deferred.
 
 Do not start audited-corpus extraction or training until rights, privacy,
 deduplication, and extraction-quality decisions are recorded.
@@ -962,4 +985,23 @@ deduplication, and extraction-quality decisions are recorded.
 - Did not execute project tests, generation, or training.
 - Exact next action: the user runs the expanded suite and reports whether all 106
   tests finish with final status `OK`; terminal checkpoint generation remains
+  blocked until then.
+
+### 2026-10-02 - State version 30
+
+- Recorded the user's confirmation that all 106 tests passed and marked greedy
+  and seeded stochastic autoregressive sampling verified.
+- Implemented a checkpoint-backed one-shot inference wrapper and CLI with UTF-8
+  byte handling, generation-only timing, throughput, checkpoint step, context
+  size, token counts, and explicit stop reasons.
+- Escaped prompt and generated text for safe terminal inspection rather than
+  allowing arbitrary generated control bytes to be interpreted by the console.
+- Added six inference tests, bringing static discovery to 112 test methods, and
+  included the fully occupied context case that must report zero generated tokens
+  and zero throughput.
+- Updated exports, README, architecture status, learning order, exact source/test
+  ranges, limitations, and the current stopping point.
+- Did not execute project tests, checkpoint generation, or training.
+- Exact next action: the user runs the expanded suite and reports whether all 112
+  tests finish with final status `OK`; actual checkpoint generation remains
   blocked until then.

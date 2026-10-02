@@ -38,6 +38,11 @@ from .feed_forward import (
 )
 from .gradcheck import GradientCheckResult, check_gradient, finite_difference_gradient
 from .initialization import initialize_parameters
+from .inference import (
+    CheckpointGenerationResult,
+    format_generation_result,
+    generate_from_checkpoint,
+)
 from .layers import (
     EmbeddingCache,
     LinearCache,
@@ -109,6 +114,7 @@ __all__ = [
     "CHECKPOINT_FORMAT",
     "CHECKPOINT_VERSION",
     "CausalAttentionCache",
+    "CheckpointGenerationResult",
     "EmbeddingCache",
     "EvaluationMetrics",
     "FeedForwardCache",
@@ -150,8 +156,10 @@ __all__ = [
     "feed_forward_backward",
     "feed_forward_forward",
     "finite_difference_gradient",
+    "format_generation_result",
     "global_gradient_norm",
     "generate_tokens",
+    "generate_from_checkpoint",
     "initialize_adamw_state",
     "initialize_parameters",
     "layer_norm_backward",

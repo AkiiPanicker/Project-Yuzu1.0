@@ -65,9 +65,9 @@ The first 20-step synthetic smoke run reduced validation loss from 5.544793 to
 planned checkpoints. This proves the small model can learn a repetitive byte
 pattern; it does not demonstrate language ability. No book or paper data has been
 ingested. Greedy and seeded stochastic autoregressive sampling with temperature,
-top-k filtering, and context-limit stopping are implemented and awaiting the
-106-test checkpoint. Terminal checkpoint generation remains the next interface
-gate.
+top-k filtering, and context-limit stopping are verified by the 106-test
+checkpoint. Checkpoint-backed one-shot generation, safe terminal rendering, and
+generation timing are implemented and awaiting the 112-test checkpoint.
 
 ## Commands
 

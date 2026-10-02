@@ -155,6 +155,13 @@ Verified with deterministic and finite-difference tests:
   next updates exactly.
 - A deliberately small synthetic-data smoke configuration and terminal command;
   it does not read or approve any audited book or paper.
+- Greedy next-token selection with deterministic first-index tie breaking.
+- Seeded categorical sampling with positive temperature and deterministic top-k
+  ranking, including stable normalization after subtracting the candidate maximum.
+- Autoregressive generation that recomputes the full visible context, copies its
+  prompt, and stops before exceeding the configured context length.
+- Explicit stop reasons distinguishing a fulfilled token request from a context
+  limit.
 
 Demonstrated by the first synthetic smoke run:
 
@@ -177,15 +184,16 @@ memorization and correct repeated updates.
 
 Implemented and awaiting user verification:
 
-- Greedy next-token selection with deterministic first-index tie breaking.
-- Seeded categorical sampling with positive temperature and deterministic top-k
-  ranking, including stable normalization after subtracting the candidate maximum.
-- Autoregressive generation that recomputes the full visible context, copies its
-  prompt, and stops before exceeding the configured context length.
-- Explicit stop reasons distinguishing a fulfilled token request from a context
-  limit.
+- Loading an exact saved checkpoint for bounded greedy or seeded stochastic
+  generation without mutating the loaded state.
+- UTF-8 prompt encoding, replacement-safe byte decoding, prompt/generated/full
+  text reporting, checkpoint step, stop reason, elapsed time, and throughput.
+- Terminal-safe `repr` rendering so generated control bytes are escaped rather
+  than interpreted by the console.
+- A one-shot generation command for inspecting a checkpoint before an interactive
+  chat loop exists.
 
 Not yet implemented:
 
-- Terminal checkpoint generation and interactive inference.
+- Interactive inference and conversation-history management.
 - Key/value caching; full-context recomputation remains the correctness oracle.
