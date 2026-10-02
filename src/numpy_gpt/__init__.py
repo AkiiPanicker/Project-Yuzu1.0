@@ -30,6 +30,13 @@ from .checkpoint import (
     save_checkpoint,
 )
 from .config import ModelConfig
+from .diagnostics import (
+    CheckpointContinuationProbeResult,
+    ContinuationProbeStep,
+    TokenCandidate,
+    format_continuation_probe,
+    probe_checkpoint_continuation,
+)
 from .feed_forward import (
     FeedForwardCache,
     FeedForwardWeightGradients,
@@ -42,6 +49,12 @@ from .inference import (
     CheckpointGenerationResult,
     format_generation_result,
     generate_from_checkpoint,
+)
+from .interactive import (
+    InteractiveSessionResult,
+    InteractiveTurnResult,
+    format_interactive_turn,
+    run_checkpoint_diagnostic,
 )
 from .layers import (
     EmbeddingCache,
@@ -115,6 +128,8 @@ __all__ = [
     "CHECKPOINT_VERSION",
     "CausalAttentionCache",
     "CheckpointGenerationResult",
+    "CheckpointContinuationProbeResult",
+    "ContinuationProbeStep",
     "EmbeddingCache",
     "EvaluationMetrics",
     "FeedForwardCache",
@@ -122,6 +137,8 @@ __all__ = [
     "GradientCheckResult",
     "GradientClippingResult",
     "GenerationResult",
+    "InteractiveSessionResult",
+    "InteractiveTurnResult",
     "LayerNormCache",
     "LanguageModelCache",
     "LanguageModelParameters",
@@ -142,6 +159,7 @@ __all__ = [
     "TrainingLoopConfig",
     "TrainingRunResult",
     "TrainingStepStats",
+    "TokenCandidate",
     "adamw_step",
     "check_gradient",
     "causal_attention_backward",
@@ -156,7 +174,9 @@ __all__ = [
     "feed_forward_backward",
     "feed_forward_forward",
     "finite_difference_gradient",
+    "format_continuation_probe",
     "format_generation_result",
+    "format_interactive_turn",
     "global_gradient_norm",
     "generate_tokens",
     "generate_from_checkpoint",
@@ -174,10 +194,12 @@ __all__ = [
     "multi_head_attention_forward",
     "named_gradients",
     "named_parameters",
+    "probe_checkpoint_continuation",
     "rms_norm_backward",
     "rms_norm_forward",
     "rope_backward",
     "rope_forward",
+    "run_checkpoint_diagnostic",
     "sample_next_token_batch",
     "save_checkpoint",
     "select_next_token",

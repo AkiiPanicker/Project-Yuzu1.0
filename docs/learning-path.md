@@ -774,7 +774,7 @@ audited books or papers.
 
 ### Step 21 - Understand the public package surface
 
-Read `src/numpy_gpt/__init__.py:3-195` last. It contains little mathematics; it
+Read `src/numpy_gpt/__init__.py:3-207` last. It contains little mathematics; it
 selects which names users can import directly from `numpy_gpt`. Reading it earlier
 would show names without explaining their behavior.
 
@@ -950,22 +950,246 @@ Run the expanded checkpoint from the project root:
 python -m unittest discover -s tests -v
 ```
 
-The expected checkpoint is 112 tests followed by `OK`. Only after it passes, run
-the one-shot generator against the completed smoke checkpoint:
+The 112-test checkpoint passed with final status `OK`. It verifies checkpoint
+loading, equivalence with direct token generation, seeded repetition, UTF-8 byte
+counting, context exhaustion, timing, escaped output, and invalid-input rejection.
+Now run the one-shot generator against the completed smoke checkpoint:
 
 ```powershell
 python scripts\generate_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000020.npz --prompt "Yuzu " --max-new-tokens 10 --greedy
 ```
 
-The smoke configuration allows only 16 total bytes, including the prompt. Its
-output will reflect one memorized repetitive sentence and should not be evaluated
-as a chatbot response.
+The prompt `Yuzu ` is deliberately in-distribution: the synthetic training
+sentence begins `Yuzu learns byte patterns one careful step at a time.`. The smoke
+configuration allows only 16 total bytes, including the prompt, so this command
+requests ten continuation bytes and remains one byte below the limit. Its output
+should be evaluated as a memorization diagnostic, not as a chatbot response.
+
+Observed result on 2026-10-02:
+
+```text
+generated='          '
+full_text='Yuzu           '
+stop_reason=max_new_tokens generated_tokens=10 tok/s=484.6 elapsed=0.0206s
+```
+
+The interface behaved correctly, but the content did not. Greedy selection chose
+a space ten times instead of the known continuation `learns byt`. Validation loss
+had fallen from approximately `log(256) = 5.545` to `3.974`, so the model had
+learned some byte-distribution structure, but not enough conditional sequence
+structure to beat the frequent-space shortcut at this prompt.
+
+### Step 26 - Understand the exact-resume deliberate overfit
+
+Resume the exact step-20 checkpoint and its saved training RNG to an absolute
+target of step 200:
+
+```powershell
+python scripts\train_smoke.py --resume runs\smoke-20261002-140621\checkpoint-step-00000020.npz --run-dir runs\smoke-20261002-140621 --steps 200 --validation-interval 10 --checkpoint-interval 50
+```
+
+`--steps 200` is an absolute target, not 200 additional updates. This command
+therefore performs 180 new updates. Reusing the run directory preserves one
+manifest and appends metrics; checkpoints are added at steps 50, 100, 150, and
+200. The checkpoint's RNG state preserves the exact batch stream that would have
+followed step 20.
+
+The run must retain finite losses. The useful evidence is substantially lower
+validation loss and, after training, a repeated fixed greedy probe that should
+continue `Yuzu ` toward `learns byt`. Even success would prove memorization of one
+sentence, not conversational ability.
+
+Observed continuation result on 2026-10-02:
+
+```text
+step=000021 train_loss=4.001722 validation_loss=3.974303 validation_ppl=53.213
+step=000200 train_loss=0.920321 validation_loss=0.867316 validation_ppl=2.381
+checkpoint step=000200 ...checkpoint-step-00000200.npz
+complete step=000200 ...checkpoint-step-00000200.npz
+```
+
+The 180 resumed updates completed in 1.18 seconds. Validation loss dropped about
+78.2 percent from step 20 and validation perplexity dropped by a factor of about
+22.3. Read-only artifact inspection found 200 metric records and six checkpoint
+events across the complete run. This passes the optimization gate, but loss alone
+cannot prove that greedy autoregression follows the learned sentence.
+
+### Step 27 - Repeat the fixed generation probe at step 200
+
+Run exactly the same prompt and decoding settings against the new checkpoint:
+
+```powershell
+python scripts\generate_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000200.npz --prompt "Yuzu " --max-new-tokens 10 --greedy
+```
+
+Keeping every decoding input fixed isolates training progress. The exact expected
+continuation from the synthetic sentence is `learns byt`, producing full text
+`Yuzu learns byt`. A different result must be reported rather than rationalized.
+Even an exact match demonstrates memorization of this one pattern only.
+
+Observed result on 2026-10-02:
+
+```text
+generated=' tte patte'
+full_text='Yuzu  tte patte'
+stop_reason=max_new_tokens generated_tokens=10 tok/s=424.7 elapsed=0.0235s
+```
+
+This is progress from ten spaces because `tte patte` resembles fragments of the
+training phrase `byte patterns`, but it fails the fixed target from the first
+byte. The low validation loss does not contradict this result: the contiguous
+43-byte validation tail is exactly ` byte patterns one careful step at a time.\n`
+and contains no `Yuzu `. Validation also reuses one sampled four-window batch, so
+its mean covers 64 possibly overlapping targets rather than this named prompt.
+
+### Step 28 - Diagnose a continuation with teacher forcing
+
+Read:
+
+- `src/numpy_gpt/diagnostics.py:16-60` - immutable candidate, step, and result
+  records.
+- `src/numpy_gpt/diagnostics.py:63-72` - top-k and byte-decoding helpers.
+- `src/numpy_gpt/diagnostics.py:75-173` - gold-prefix scoring and aggregation.
+- `src/numpy_gpt/diagnostics.py:176-205` - terminal-safe detailed rendering.
+- `scripts/probe_checkpoint.py:19-43` - terminal entry point and defaults.
+- `tests/test_diagnostics.py:32-56` - tiny checkpoint fixtures.
+- `tests/test_diagnostics.py:59-206` - direct-model equivalence, gold-prefix
+  behavior after an error, tie ranking, UTF-8 bytes, full-context scoring,
+  escaping, invalid inputs, repeatability, and checkpoint immutability.
+
+Autoregressive generation feeds each prediction back into the next step. One
+wrong byte can therefore push every later prefix away from the known sentence.
+Teacher forcing answers a narrower diagnostic question:
+
+```text
+prompt + correct bytes before offset
+    -> model logits at the final position
+    -> probability and rank of the correct byte at this offset
+    -> append the correct byte regardless of the greedy prediction
+    -> repeat
+```
+
+The probe distinguishes “the first error derailed generation” from “the model
+does not know later transitions either.” It is read-only and hashes are not
+needed for safety: a test compares the checkpoint's exact bytes before and after
+two repeated probes.
+
+The verification command for this stage was:
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+Verification result on 2026-10-02: the user reported all 118 tests passed with
+final status `OK`. The next action is to compare teacher-forced results at steps
+20 and 200:
+
+```powershell
+python scripts\probe_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000020.npz --prompt "Yuzu " --expected "learns byt" --top-k 5
+python scripts\probe_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000200.npz --prompt "Yuzu " --expected "learns byt" --top-k 5
+```
+
+Observed comparison on 2026-10-03:
+
+- Teacher-forced top-1 accuracy improved from 1/10 to 7/10.
+- Mean loss fell from 3.943107 to 1.022074, about 74.1 percent.
+- Perplexity fell from 51.579 to 2.779, about 18.56 times lower.
+- The expected first byte `l` improved from rank 10 at probability 0.015646 to
+  rank three at probability 0.063652, but space still has probability 0.514896.
+- The other step-200 misses are `a` at rank three and `b` at rank two; `b` is a
+  near-tie with `c`, while the first-byte space is not.
+
+The model therefore learned substantial conditional structure, but free-running
+generation leaves the intended path immediately. Do not change temperature or
+train further yet. Score the first byte once with the exact 16-byte context that
+precedes the same transition inside repeated training text. In Command Prompt,
+run this as one line:
+
+```bat
+python -c "import sys; sys.path.insert(0,'src'); from numpy_gpt import probe_checkpoint_continuation,format_continuation_probe; r=probe_checkpoint_continuation(r'runs\smoke-20261002-140621\checkpoint-step-00000200.npz','at a time.\nYuzu ','l',top_k=5); print(format_continuation_probe(r))"
+```
+
+Python converts `\n` inside its string literal to the real newline byte used by
+the corpus. If `l` becomes rank one, training over-relied on preceding
+context/window position and prompt-aligned examples must be added. If it still
+misses, focused underfitting remains the simpler explanation.
+
+Observed exact-context result on 2026-10-03:
+
+```text
+prompt='at a time.\nYuzu ' prompt_tokens=16
+expected='l' predicted=' ' p_expected=0.059196 rank=3
+top=[' '(p=0.488026), 's'(p=0.193224), 'l'(p=0.059196)]
+```
+
+The expected byte did not improve: it remained rank three and its probability
+fell about 7 percent from the bare-prompt value. Space remained 8.24 times more
+likely. The exact preceding text and exact full-window position therefore do not
+recover the transition. The cheapest remaining hypothesis is ordinary
+undertraining, tested without changing any other variable.
+
+Resume from step 200 to the absolute target step 300:
+
+```bat
+python scripts\train_smoke.py --resume runs\smoke-20261002-140621\checkpoint-step-00000200.npz --run-dir runs\smoke-20261002-140621 --steps 300 --validation-interval 10 --checkpoint-interval 50
+```
+
+This performs 100 additional updates, about 37.2 token-equivalent epochs, and
+preserves the checkpoint's optimizer and RNG state. It creates checkpoints at
+250 and 300. After successful completion, run:
+
+```bat
+python scripts\probe_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000250.npz --prompt "Yuzu " --expected "learns byt" --top-k 5
+python scripts\probe_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000300.npz --prompt "Yuzu " --expected "learns byt" --top-k 5
+```
+
+The precommitted step-300 gate is: `l` must reach rank one or two, or its
+probability must rise by at least 25 percent from 0.063652 to 0.079565 while the
+space-to-`l` ratio falls. If neither occurs while aggregate loss improves, stop
+uniform-window training and implement prefix-balanced/BOS-aligned batching.
+
+Observed controlled-resume result on 2026-10-03:
+
+```text
+step=000201 train_loss=1.097806 validation_loss=0.867316
+step=000250 train_loss=0.579530 validation_loss=0.624766
+checkpoint step=000250 ...checkpoint-step-00000250.npz
+step=000300 train_loss=0.283254 validation_loss=0.437441 validation_ppl=1.549
+checkpoint step=000300 ...checkpoint-step-00000300.npz
+complete step=000300 ...checkpoint-step-00000300.npz
+```
+
+All metrics stayed finite. The final sampled training loss is about 69.2 percent
+below step 200, while fixed-batch validation loss is about 49.6 percent lower.
+The validation batch still does not contain the named prompt, so the two fixed
+teacher-forced probes remain the direct evidence:
+
+```text
+step 250: top1=9/10, loss=0.380104, perplexity=1.462
+          expected `l`: rank=2, p=0.355314; space p=0.389764
+step 300: top1=10/10, exact_match=True, loss=0.230220, perplexity=1.259
+          expected `l`: rank=1, p=0.705429; space p=0.096345
+```
+
+The precommitted gate passed. Continued unchanged optimization was sufficient;
+prefix-balanced batching is not required to explain this tiny-run failure. One
+integration gate remains: teacher forcing supplies every correct prefix, whereas
+greedy generation must create those prefixes itself. Run:
+
+```bat
+python scripts\generate_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000300.npz --prompt "Yuzu " --max-new-tokens 10 --greedy
+```
+
+Because each expected byte is top one under its correct prefix, deterministic
+greedy generation should produce `generated='learns byt'` and
+`full_text='Yuzu learns byt'`. Any deviation would indicate an inference or
+checkpoint inconsistency rather than inadequate optimization.
 
 ## Track B: corpus and project operations
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 26 - Understand why files are not automatically training data
+### Step 29 - Understand why files are not automatically training data
 
 Read:
 
@@ -978,7 +1202,7 @@ Read:
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
 - `docs/corpus-audit.md:49-58` - future preprocessing sequence.
 
-### Step 27 - Read the corpus auditor as an independent utility
+### Step 30 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -993,7 +1217,7 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 28 - Read future identity work separately
+### Step 31 - Read future identity work separately
 
 Read:
 
@@ -1042,12 +1266,20 @@ configuration
     -> observable, resumable multi-step trainer
     -> synthetic tiny-run loss-reduction proof
     -> deterministic autoregressive sampling
-    -> terminal-safe checkpoint generation (awaiting verification)
+    -> terminal-safe checkpoint generation
+    -> exact-resume overfitting to step 200
+    -> fixed greedy probes exposing a conditional-generation failure
+    -> teacher-forced continuation diagnostic verified by 118 tests
+    -> step-20/step-200 teacher-forced comparison
+    -> exact-context probe rejecting context mismatch as the immediate cause
+    -> controlled step-300 resume passing teacher-forced exact memorization
 ```
 
 The next evidence and implementation chain will be:
 
 ```text
-interactive generation
+unchanged step-300 greedy integration probe
+    -> close the tiny-pattern memorization gate only on exact output
+    -> interactive generation only after sequence learning
     -> conversation-history management
 ```
