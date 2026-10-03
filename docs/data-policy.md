@@ -8,6 +8,13 @@
 The project stores only a metadata manifest until documents are approved. Source
 files remain in place and are never changed.
 
+Approval is recorded separately in `data/manifests/corpus_decisions.json`; local
+possession alone is not a rights basis. The unverified `scripts/admit_corpus.py`
+implementation is designed to bind that decision manifest to the exact inventory
+bytes and, only for otherwise approved records, check live source hashes without
+extracting document text. The schema and evidence rules are documented in
+`docs/corpus-admission.md`.
+
 ## Admission gates
 
 A document may enter a training split only when all applicable checks pass:
@@ -36,4 +43,3 @@ A document may enter a training split only when all applicable checks pass:
 The current collection is weighted toward finance, mathematics, engineering,
 business, and a small amount of fiction. It is useful for domain experiments but
 is not broad or conversational enough to pretrain a general assistant by itself.
-

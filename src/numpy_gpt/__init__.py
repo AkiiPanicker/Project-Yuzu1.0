@@ -30,6 +30,15 @@ from .checkpoint import (
     save_checkpoint,
 )
 from .config import ModelConfig
+from .corpus_admission import (
+    CORPUS_ADMISSION_SCHEMA_VERSION,
+    CorpusAdmissionRecord,
+    CorpusAdmissionReport,
+    evaluate_corpus_admission,
+    format_corpus_admission_summary,
+    sha256_file,
+    write_corpus_admission_report,
+)
 from .diagnostics import (
     CheckpointContinuationProbeResult,
     ContinuationProbeStep,
@@ -129,7 +138,10 @@ __all__ = [
     "CausalAttentionCache",
     "CheckpointGenerationResult",
     "CheckpointContinuationProbeResult",
+    "CORPUS_ADMISSION_SCHEMA_VERSION",
     "ContinuationProbeStep",
+    "CorpusAdmissionRecord",
+    "CorpusAdmissionReport",
     "EmbeddingCache",
     "EvaluationMetrics",
     "FeedForwardCache",
@@ -170,11 +182,13 @@ __all__ = [
     "embedding_backward",
     "embedding_forward",
     "evaluate_batch",
+    "evaluate_corpus_admission",
     "encode_utf8",
     "feed_forward_backward",
     "feed_forward_forward",
     "finite_difference_gradient",
     "format_continuation_probe",
+    "format_corpus_admission_summary",
     "format_generation_result",
     "format_interactive_turn",
     "global_gradient_norm",
@@ -203,6 +217,7 @@ __all__ = [
     "sample_next_token_batch",
     "save_checkpoint",
     "select_next_token",
+    "sha256_file",
     "silu_backward",
     "silu_forward",
     "softmax",
@@ -212,6 +227,7 @@ __all__ = [
     "swiglu_forward",
     "transformer_block_backward",
     "transformer_block_forward",
+    "write_corpus_admission_report",
     "run_training",
     "train_step",
 ]

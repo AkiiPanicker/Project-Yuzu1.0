@@ -7,8 +7,8 @@ __pycache__/
 # Generated corpora and model artifacts stay local.
 data/processed/
 data/raw/
+data/manifests/corpus_admission.json
 checkpoints/
 runs/
 *.npy
 *.npz
-

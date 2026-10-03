@@ -1,6 +1,6 @@
 # Learning path: rebuild the project in your head
 
-This guide is pinned to the source layout as of project state version 23. Source
+This guide is pinned to the source layout as of project state version 42. Source
 line numbers will move as the implementation grows, so update this file whenever
 the referenced code changes substantially.
 
@@ -26,11 +26,13 @@ Read:
 - `README.md:8-16` - constraints that prevent hidden framework behavior.
 - `README.md:18-36` - initial model and residual-block data flow.
 - `README.md:38-47` - directory layout.
-- `README.md:61-73` - staged roadmap.
+- `README.md:124-126` - still-open scaling gates.
+- `README.md:128-139` - staged roadmap.
 - `docs/architecture.md:3-8` - objective and evaluation philosophy.
 - `docs/architecture.md:10-38` - selected and deferred architecture components.
 - `docs/architecture.md:40-55` - initial dimensions and parameter budget.
-- `docs/architecture.md:57-66` - gates that must pass before scaling.
+- `docs/architecture.md:71-84` - gates that must pass before scaling and their
+  current status.
 
 You should be able to answer:
 
@@ -1171,38 +1173,88 @@ step 300: top1=10/10, exact_match=True, loss=0.230220, perplexity=1.259
           expected `l`: rank=1, p=0.705429; space p=0.096345
 ```
 
-The precommitted gate passed. Continued unchanged optimization was sufficient;
-prefix-balanced batching is not required to explain this tiny-run failure. One
-integration gate remains: teacher forcing supplies every correct prefix, whereas
-greedy generation must create those prefixes itself. Run:
+The precommitted teacher-forced gate passed. Continued unchanged optimization was
+sufficient; prefix-balanced batching is not required to explain this tiny-run
+failure. The remaining integration check used unchanged greedy generation:
 
 ```bat
 python scripts\generate_checkpoint.py runs\smoke-20261002-140621\checkpoint-step-00000300.npz --prompt "Yuzu " --max-new-tokens 10 --greedy
 ```
 
-Because each expected byte is top one under its correct prefix, deterministic
-greedy generation should produce `generated='learns byt'` and
-`full_text='Yuzu learns byt'`. Any deviation would indicate an inference or
-checkpoint inconsistency rather than inadequate optimization.
+Observed result on 2026-10-03:
+
+```text
+generated='learns byt'
+full_text='Yuzu learns byt'
+stop_reason=max_new_tokens generated_tokens=10 tok/s=600.0 elapsed=0.0167s
+```
+
+Free-running generation exactly matched the expected continuation. This closes
+the tiny-pattern checkpoint-integration gate, but only for this memorized
+synthetic prompt. It does not establish generalization, language ability, or
+conversation.
+
+### Step 29 - Inspect one loaded checkpoint interactively
+
+Read:
+
+- `src/numpy_gpt/interactive.py:26-48` - immutable turn and session records.
+- `src/numpy_gpt/interactive.py:51-102` - option, JSON-lines, and help behavior.
+- `src/numpy_gpt/interactive.py:105-125` - terminal-safe turn rendering.
+- `src/numpy_gpt/interactive.py:128-321` - load-once session loop, independent
+  prompts, persistent stochastic RNG, bounded generation, and explicit exits.
+- `scripts/interactive_checkpoint.py:16-52` - command-line settings and default
+  run-directory log.
+- `tests/test_interactive.py:76-307` - load-once, sampler equivalence, RNG,
+  statelessness, recovery, byte limits, escaping, logging, and validation tests.
+
+This tool deliberately calls itself an interactive checkpoint diagnostic, not a
+chatbot. It loads parameters once, but each line is encoded as a new independent
+UTF-8 byte prompt. It never prepends prior prompts or outputs, invents speaker
+roles, trains the model, or modifies the checkpoint. Spaces are meaningful bytes.
+A stochastic session advances one RNG across turns; that process state is not
+conversation memory.
+
+Verification result on 2026-10-03: the user reported all 126 tests passed. This
+mechanically verifies the load-once session, independent prompts, persistent
+stochastic RNG, safe terminal output, checkpoint immutability, recovery behavior,
+logging, and exit paths. It does not measure conversational quality.
+
+Observed result on 2026-10-03:
+
+```text
+turn=0001 prompt='Yuzu ' prompt_tokens=5
+generated='learns byt'
+full_text='Yuzu learns byt'
+stop_reason=max_new_tokens generated_tokens=10 tok/s=313.5 elapsed=0.0319s
+```
+
+The terminal also displayed all four help lines. The pasted transcript ended at
+`prompt> /exit`, but the local JSON-lines record contains the matching
+`session_end` event with `reason="command"` and `turns=1`. The manual diagnostic
+gate therefore passed. The throughput number describes one very short CPU call
+and is not a benchmark.
 
 ## Track B: corpus and project operations
 
 Study this track after Track A. It does not explain transformer mathematics.
 
-### Step 29 - Understand why files are not automatically training data
+### Step 30 - Understand why files are not automatically training data
 
 Read:
 
 - `docs/data-policy.md:3-9` - source folders and non-copying rule.
-- `docs/data-policy.md:11-25` - seven admission gates.
-- `docs/data-policy.md:27-32` - default exclusions.
-- `docs/data-policy.md:34-39` - domain and diversity limitation.
+- `docs/data-policy.md:11-16` - decision-manifest boundary.
+- `docs/data-policy.md:18-32` - seven admission gates.
+- `docs/data-policy.md:34-39` - default exclusions.
+- `docs/data-policy.md:41-45` - domain and diversity limitation.
 - `docs/corpus-audit.md:6-19` - counts.
 - `docs/corpus-audit.md:21-35` - duplicates, sensitive data, and OCR holds.
 - `docs/corpus-audit.md:37-47` - scale estimate and limitations.
-- `docs/corpus-audit.md:49-58` - future preprocessing sequence.
+- `docs/corpus-audit.md:49-61` - verification, admission, and future
+  preprocessing sequence.
 
-### Step 30 - Read the corpus auditor as an independent utility
+### Step 31 - Read the corpus auditor as an independent utility
 
 Read:
 
@@ -1217,7 +1269,77 @@ Read:
 - `data/manifests/corpus_inventory.json:1-27` - manifest metadata and summary only;
   do not begin by reading all 1,420 lines of individual records.
 
-### Step 31 - Read future identity work separately
+### Step 32 - Understand the fail-closed corpus-admission gate
+
+Read:
+
+- `docs/corpus-admission.md:1-117` - human decision schema, immutable holds,
+  snapshot boundary, and command behavior.
+- `src/numpy_gpt/corpus_admission.py:16-42` - schemas, statuses, and hard holds.
+- `src/numpy_gpt/corpus_admission.py:44-132` - immutable record/report structures
+  and metadata-only serialization.
+- `src/numpy_gpt/corpus_admission.py:135-383` - same-buffer hashing and strict inventory,
+  decision, rights, privacy, extraction, reviewer, and timestamp validation.
+- `src/numpy_gpt/corpus_admission.py:386-508` - fail-closed reason composition,
+  live source integrity, and admission evaluation.
+- `src/numpy_gpt/corpus_admission.py:511-584` - protected atomic report writing,
+  path-alias checks, and terminal summary.
+- `scripts/admit_corpus.py:20-52` - default manifests, output, and exit codes.
+- `tests/test_corpus_admission.py:115-564` - approvals, review failures, immutable
+  holds, source changes, malformed manifests, metadata boundaries, and CLI tests.
+
+The inventory records observed facts; it is never edited to grant permission. The
+separate decision manifest initially contains no decisions and is bound to the
+exact inventory bytes:
+
+```text
+inventory fact + explicit reviews + unchanged live source
+    -> metadata-only admission report
+    -> future extraction may consider only admitted records
+```
+
+A local copy does not establish training rights. One record is admitted only if
+the inventory is eligible, rights/privacy/extraction are all explicitly approved,
+and the current file size and SHA-256 still match. Sensitive, duplicate, OCR-held,
+unknown, pending, missing, or changed sources remain refused. The evaluator never
+extracts text.
+
+First run the expanded suite:
+
+```bat
+python -m unittest discover -s tests -v
+```
+
+All 134 tests must finish with `OK`. Only then run the admission report. Its
+initial exit code is intentionally `1` because zero sources have review decisions.
+
+```bat
+python scripts\admit_corpus.py
+```
+
+Run this separately rather than joining it to the test command with `&&`; exit
+`1` is the expected closed-gate result, not a test failure.
+
+The expected summary is `admission_gate=CLOSED total=58 admitted=0 refused=58`.
+The reason counts should include 58 missing decisions plus the inventory holds:
+three exact duplicates, one sensitive record, and seven OCR-quarantined records.
+Inspect the saved report's `authorization`, `inventory`, `decisions`, and `summary`
+metadata; it must not contain sampled or extracted text. The report is only a
+snapshot. A future extractor must rerun the evaluator instead of trusting an old
+`OPEN` result.
+
+An OCR-held source cannot be approved by changing its decision. The later path is
+to create a derived OCR artifact, retain provenance, regenerate its inventory
+record, review extraction quality, and decide against the derived file's new
+exact hash.
+
+You should be able to answer:
+
+- Why must a manifest be hashed from the same bytes that are parsed?
+- Why is a saved `OPEN` report not authorization for a later extraction run?
+- Why does an OCR-derived artifact need a new inventory record and review?
+
+### Step 33 - Read future identity work separately
 
 Read:
 
@@ -1273,13 +1395,21 @@ configuration
     -> step-20/step-200 teacher-forced comparison
     -> exact-context probe rejecting context mismatch as the immediate cause
     -> controlled step-300 resume passing teacher-forced exact memorization
+    -> unchanged greedy generation producing exact `learns byt`
+    -> tiny-pattern checkpoint-integration gate closed
+    -> stateless interactive checkpoint diagnostic verified by 126 tests
+    -> manual diagnostic session and durable log verified
+    -> metadata-only corpus-admission gate implemented, verification pending
 ```
 
 The next evidence and implementation chain will be:
 
 ```text
-unchanged step-300 greedy integration probe
-    -> close the tiny-pattern memorization gate only on exact output
-    -> interactive generation only after sequence learning
+user verification of the 134-test admission checkpoint
+    -> initial fail-closed report with zero admitted sources
+    -> explicit rights/privacy/extraction decisions
+    -> rights-cleared corpus and multi-pattern generalization baseline
+    -> fixed-seed bigram comparison and peak-memory measurement
+    -> evidence-based model-scale decision
     -> conversation-history management
 ```

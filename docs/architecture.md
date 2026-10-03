@@ -79,6 +79,10 @@ The model is not enlarged until all conditions at the current scale pass:
 5. Generation is compared with a bigram baseline under fixed seeds.
 6. Memory and tokens-per-second are recorded.
 
+At the current stopping point, gates 1-4 have evidence at toy scale and
+tokens-per-second is recorded. The fixed-seed bigram comparison and peak-memory
+measurement are still open, so model enlargement is not authorized.
+
 ## Primary research references
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
@@ -98,7 +102,7 @@ feature. OLMo is especially useful because its artifacts and training decisions
 are unusually transparent; Llama 3 informs dense-model practice; DeepSeek-V3 is
 an advanced branch for later efficiency experiments.
 
-## Implementation status - 2026-10-02
+## Implementation status - 2026-10-04
 
 Verified with deterministic and finite-difference tests:
 
@@ -168,8 +172,8 @@ Verified with deterministic and finite-difference tests:
   text reporting, checkpoint step, stop reason, elapsed time, and throughput.
 - Terminal-safe `repr` rendering so generated control bytes are escaped rather
   than interpreted by the console.
-- A one-shot generation command for inspecting a checkpoint before an interactive
-  chat loop exists.
+- A one-shot generation command for inspecting a checkpoint, complemented by a
+  separate stateless interactive diagnostic that is explicitly not a chat loop.
 
 Demonstrated by the first synthetic smoke run:
 
@@ -282,14 +286,74 @@ Observed controlled-resume result:
 - This passes the teacher-forced tiny-pattern memorization gate. It does not show
   language ability, generalization, or conversational behavior.
 
-Next runtime evidence gate:
+Observed step-300 checkpoint generation:
 
-- Run the unchanged greedy `Yuzu ` probe against checkpoint step 300. Exact output
-  must be `learns byt`; otherwise checkpoint-backed generation is inconsistent
-  with the verified teacher-forced ranking.
-- Do not train further before this integration check.
+- The unchanged five-byte prompt `Yuzu ` and unchanged greedy settings generated
+  the exact ten-byte suffix `learns byt`, producing `Yuzu learns byt`.
+- This agrees with the step-300 teacher-forced top-one rankings and closes the
+  tiny-pattern checkpoint-integration gate.
+- The result demonstrates exact memorization of one synthetic continuation, not
+  generalization, dialogue, or language ability.
+
+Verified by the user-reported 126-test suite:
+
+- A checkpoint is loaded once for repeated interactive inspection.
+- Each turn encodes only that turn's exact UTF-8 prompt. Prior prompts and outputs
+  are never prepended, so the tool has no conversation state.
+- A stochastic session retains and advances one RNG, which is process state rather
+  than dialogue history. Greedy mode uses no RNG.
+- The tool identifies itself as an interactive checkpoint diagnostic and explicitly
+  says it is not a chatbot.
+- Prompt and generated control bytes are escaped, full-context behavior remains
+  bounded, `/help`, `/exit`, EOF, and interruption are explicit, and JSON-lines
+  session records default to the checkpoint's run directory.
+- Eight new tests cover load-once behavior, checkpoint immutability, direct sampler
+  equivalence, persistent seeded RNG state, stateless turns, recovery, context
+  limits, terminal escaping, logs, and exit paths.
+
+Observed interactive runtime:
+
+- The step-300 checkpoint loaded once in greedy mode with context length 16.
+- Entering the five-byte prompt `Yuzu ` generated the exact ten-byte continuation
+  `learns byt`; all generated token IDs and the context stop metadata were visible.
+- `/help` restated that prompts are independent and no role labels or conversation
+  history are added.
+- Although the pasted terminal transcript ended at `/exit`, the append-only local
+  JSON-lines log records the same session's `session_end` event with
+  `reason=command` and `turns=1`.
+- This closes the diagnostic runtime gate. It remains a stateless inspection tool,
+  not evidence of dialogue capability.
+
+Implemented, verification pending:
+
+- A metadata-only corpus-admission evaluator separated from the observed inventory
+  and from future extraction.
+- A decision manifest bound to the exact inventory-file SHA-256, with strict
+  source paths, expected hashes, UTC reviewer metadata, and explicit rights,
+  privacy, and extraction reviews.
+- Inventory and decision JSON are each parsed and SHA-256-bound from one byte
+  read, preventing a digest from describing bytes other than those evaluated.
+- Inventory roots, derived names/suffixes, supported states, duplicate groups,
+  and source containment are validated before decisions are considered.
+- Sensitive records, exact duplicates, OCR quarantine, unknown inventory states,
+  missing decisions, pending or denied reviews, changed sizes, and changed live
+  hashes all fail closed.
+- Only otherwise eligible records with three completed approvals reach a live
+  source size/hash check. Refused records are never opened merely to confirm their
+  refusal.
+- Atomic reports contain metadata and reason codes only; protected inventory,
+  decision, and source paths cannot be report destinations. Reports are marked as
+  informational snapshots and never authorize later extraction. The initial empty
+  decisions list is expected to refuse all files after verification.
+- Eight tests cover approvals, every refusal class, immutable holds, source
+  integrity, strict/stale schemas, deterministic admission results, metadata-only
+  reports, source immutability, atomic writes, and CLI exit codes. The user has
+  not run them yet.
 
 Not yet implemented:
 
-- Interactive inference and conversation-history management.
+- Stateful conversational inference, role formatting, and conversation-history
+  management.
+- Approved-document extraction, normalization, document-level splitting, or
+  training on any audited source.
 - Key/value caching; full-context recomputation remains the correctness oracle.

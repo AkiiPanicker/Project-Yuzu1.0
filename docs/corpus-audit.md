@@ -48,11 +48,14 @@ and a small amount of fiction to pretrain a broadly conversational assistant.
 
 ## Next data decisions
 
-1. Record an include/exclude/unknown rights decision per source.
-2. Visually inspect representative pages before selecting an OCR method.
-3. Extract approved documents into one normalized document per record.
-4. Remove headers, footers, page numbers, broken hyphenation, and duplicate text.
-5. Preserve equations and code using explicit boundary markers.
-6. Create document-level train, validation, and test splits before chunking.
-7. Measure the actual byte and subword token totals after normalization.
-
+1. Run the full 134-test suite and require final status `OK`.
+2. Run the initial metadata-only admission command and require a closed gate with
+   58 refused and zero admitted files.
+3. Use the hash-bound schema in `docs/corpus-admission.md` to record explicit
+   rights, privacy, and extraction-quality decisions per intended source.
+4. Visually inspect representative pages before selecting an OCR method.
+5. Extract only currently admitted documents into one normalized record each.
+6. Remove headers, footers, page numbers, broken hyphenation, and duplicate text.
+7. Preserve equations and code using explicit boundary markers.
+8. Create document-level train, validation, and test splits before chunking.
+9. Measure the actual byte and subword token totals after normalization.
